@@ -1,20 +1,13 @@
 #include "main.h"
 
-/**
- * A callback function for LLEMU's center button.
- *
- * When this callback is fired, it will toggle line 2 of the LCD text between
- * "I was pressed!" and nothing.
- */
-void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
-}
+pros::Motor LF(15, false);
+pros::Motor LB(14, false);
+
+pros::Motor RF(16, true);
+pros::Motor RB(17, true);
+
+pros::Motor LI(1, false);
+pros::Motor RI(10, true);
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -22,12 +15,7 @@ void on_center_button() {
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
-
-	pros::lcd::register_btn1_cb(on_center_button);
-}
+void initialize() {}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -73,13 +61,17 @@ void autonomous() {}
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol() {
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
-
-	while (true) {
-		left_mtr = -80;
-		right_mtr = 80;
+void opcontrol()
+{
+	pros::Controller Ctrlr(pros::E_CONTROLLER_MASTER);
+	// LI=127;
+	// RI=127;
+	while (true)
+	{
+		LF = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) + Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		LB = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) + Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		RF = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) - Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		RB = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) - Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
 		pros::delay(20);
 	}
 }

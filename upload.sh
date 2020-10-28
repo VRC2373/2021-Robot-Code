@@ -1,0 +1,1 @@
+sudo prosv5 make && sudo prosv5 upload --icon  'USER003x.bmp'
