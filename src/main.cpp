@@ -1,5 +1,7 @@
 #include "main.h"
 
+pros::Controller Primary(pros::E_CONTROLLER_MASTER);
+
 pros::Motor LF(15, false);
 pros::Motor LB(14, false);
 
@@ -9,13 +11,17 @@ pros::Motor RB(17, true);
 pros::Motor LI(1, false);
 pros::Motor RI(10, true);
 
+pros::Imu Inertial(8);
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {}
+void initialize()
+{
+}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -63,15 +69,22 @@ void autonomous() {}
  */
 void opcontrol()
 {
-	pros::Controller Ctrlr(pros::E_CONTROLLER_MASTER);
-	// LI=127;
-	// RI=127;
+	int8_t intakeSpeed = 0;
+	int8_t drivebaseX = 0;
+	int8_t drivebaseY = 0;
 	while (true)
 	{
-		LF = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) + Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		LB = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) + Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		RF = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) - Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		RB = Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y) - Ctrlr.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		drivebaseX = Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		drivebaseY = Primary.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		LF = drivebaseY + drivebaseX;
+		LB = drivebaseY + drivebaseX;
+		RF = drivebaseY - drivebaseX;
+		RB = drivebaseY - drivebaseX;
+
+		intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_A) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+		LI = intakeSpeed;
+		RI = intakeSpeed;
+
 		pros::delay(20);
 	}
 }
