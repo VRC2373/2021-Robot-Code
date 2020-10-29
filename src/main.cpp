@@ -11,7 +11,7 @@ pros::Motor RB(17, true);
 pros::Motor LI(1, false);
 pros::Motor RI(10, true);
 
-pros::Imu Inertial(8);
+pros::Vision Camera(5);
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -19,9 +19,7 @@ pros::Imu Inertial(8);
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize()
-{
-}
+void initialize() {}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
