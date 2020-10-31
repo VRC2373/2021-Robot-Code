@@ -11,8 +11,6 @@ pros::Motor RB(17, true);
 pros::Motor LI(1, false);
 pros::Motor RI(10, true);
 
-pros::Vision Camera(5);
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
