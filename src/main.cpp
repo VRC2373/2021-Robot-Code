@@ -72,7 +72,6 @@ void opcontrol()
 	int8_t intakeSpeed = 0;
 	int8_t drivebaseX = 0;
 	int8_t drivebaseY = 0;
-	bool elevatorAuto = false;
 
 	while (true)
 	{
@@ -88,16 +87,7 @@ void opcontrol()
 		RI = intakeSpeed;
 
 		Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
-
-		if (Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
-			elevatorAuto = !elevatorAuto;
-		if (Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) || Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
-			elevatorAuto = false;
-
-		if (elevatorAuto)
-			Elevator = 127;
-		else
-			Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_X) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+		Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L2) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
 
 		pros::lcd::print(0, "Current: %d; Current Limit: %d", Flywheel.get_current_draw(), Flywheel.get_current_limit());
 		pros::delay(20);
