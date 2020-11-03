@@ -8,8 +8,11 @@ pros::Motor LB(14, false);
 pros::Motor RF(16, true);
 pros::Motor RB(17, true);
 
-pros::Motor LI(1, false);
-pros::Motor RI(10, true);
+pros::Motor LI(11, false);
+pros::Motor RI(20, true);
+
+pros::Motor Elevator(12, true);
+pros::Motor Flywheel(10, pros::E_MOTOR_GEARSET_18, false);
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -65,9 +68,12 @@ void autonomous() {}
  */
 void opcontrol()
 {
+	pros::lcd::initialize();
 	int8_t intakeSpeed = 0;
 	int8_t drivebaseX = 0;
 	int8_t drivebaseY = 0;
+	bool elevatorAuto = false;
+
 	while (true)
 	{
 		drivebaseX = Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
@@ -77,10 +83,23 @@ void opcontrol()
 		RF = drivebaseY - drivebaseX;
 		RB = drivebaseY - drivebaseX;
 
-		intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_A) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+		intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R2) ? -127 : 0;
 		LI = intakeSpeed;
 		RI = intakeSpeed;
 
+		Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
+
+		if (Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_A))
+			elevatorAuto = !elevatorAuto;
+		if (Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_X) || Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_B))
+			elevatorAuto = false;
+
+		if (elevatorAuto)
+			Elevator = 127;
+		else
+			Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_X) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+
+		pros::lcd::print(0, "Current: %d; Current Limit: %d", Flywheel.get_current_draw(), Flywheel.get_current_limit());
 		pros::delay(20);
 	}
 }
