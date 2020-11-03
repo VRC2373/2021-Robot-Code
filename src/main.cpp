@@ -8,11 +8,11 @@ pros::Motor LB(14, false);
 pros::Motor RF(16, true);
 pros::Motor RB(17, true);
 
-pros::Motor LI(11, false);
-pros::Motor RI(20, true);
+pros::Motor LI(11, true);
+pros::Motor RI(20, false);
 
 pros::Motor Elevator(12, true);
-pros::Motor Flywheel(10, pros::E_MOTOR_GEARSET_18, false);
+pros::Motor Flywheel(10, false);
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
