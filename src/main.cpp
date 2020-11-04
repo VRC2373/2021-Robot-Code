@@ -1,18 +1,6 @@
 #include "main.h"
 
-pros::Controller Primary(pros::E_CONTROLLER_MASTER);
-
-pros::Motor LF(15, false);
-pros::Motor LB(14, false);
-
-pros::Motor RF(16, true);
-pros::Motor RB(17, true);
-
-pros::Motor LI(11, true);
-pros::Motor RI(20, false);
-
-pros::Motor Elevator(12, true);
-pros::Motor Flywheel(10, false);
+uint8_t autonSelected;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -38,7 +26,12 @@ void disabled() {}
  * This task will exit when the robot is enabled and autonomous or opcontrol
  * starts.
  */
-void competition_initialize() {}
+void competition_initialize()
+{
+	MInertial.take(2000);
+	Intertial.reset();
+	MInertial.give();
+}
 
 /**
  * Runs the user autonomous code. This function will be started in its own task
@@ -51,7 +44,14 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous()
+{
+	switch (autonSelected)
+	{
+	case 1:
+		break;
+	}
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -68,10 +68,18 @@ void autonomous() {}
  */
 void opcontrol()
 {
-	pros::lcd::initialize();
 	int8_t intakeSpeed = 0;
 	int8_t drivebaseX = 0;
 	int8_t drivebaseY = 0;
+
+	MDrivebase.take(TIMEOUT_MAX);
+	MIntake.take(TIMEOUT_MAX);
+	MElevator.take(TIMEOUT_MAX);
+	MFlywheel.take(TIMEOUT_MAX);
+	MInertial.take(TIMEOUT_MAX);
+
+	if (!autonSelected)
+		deploySequence();
 
 	while (true)
 	{
@@ -88,8 +96,5 @@ void opcontrol()
 
 		Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
 		Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L2) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
-
-		pros::lcd::print(0, "Current: %d; Current Limit: %d", Flywheel.get_current_draw(), Flywheel.get_current_limit());
-		pros::delay(20);
 	}
 }
