@@ -1,6 +1,6 @@
 #pragma once
 #include "api.h"
-#include "config.h"
+#include "config.hpp"
 
 void deploySequence();
 

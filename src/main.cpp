@@ -28,9 +28,7 @@ void disabled() {}
  */
 void competition_initialize()
 {
-	MInertial.take(2000);
 	Intertial.reset();
-	MInertial.give();
 }
 
 /**
@@ -71,12 +69,6 @@ void opcontrol()
 	int8_t intakeSpeed = 0;
 	int8_t drivebaseX = 0;
 	int8_t drivebaseY = 0;
-
-	MDrivebase.take(TIMEOUT_MAX);
-	MIntake.take(TIMEOUT_MAX);
-	MElevator.take(TIMEOUT_MAX);
-	MFlywheel.take(TIMEOUT_MAX);
-	MInertial.take(TIMEOUT_MAX);
 
 	if (!autonSelected)
 		deploySequence();
