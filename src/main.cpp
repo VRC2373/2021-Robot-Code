@@ -1,6 +1,6 @@
 #include "main.h"
 
-uint8_t autonSelected;
+uint8_t autonSelected = 0;
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -28,7 +28,7 @@ void disabled() {}
  */
 void competition_initialize()
 {
-	Intertial.reset();
+	Inertial.reset();
 }
 
 /**
@@ -42,14 +42,7 @@ void competition_initialize()
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous()
-{
-	switch (autonSelected)
-	{
-	case 1:
-		break;
-	}
-}
+void autonomous() {}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -69,8 +62,7 @@ void opcontrol()
 	int8_t intakeSpeed = 0;
 	int8_t drivebaseX = 0;
 	int8_t drivebaseY = 0;
-
-	if (!autonSelected)
+	if (pros::competition::is_connected() && !deployed)
 		deploySequence();
 
 	while (true)
