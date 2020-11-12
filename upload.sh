@@ -1,1 +1,1 @@
-prosv5 make && prosv5 upload --icon  'USER003x.bmp'
+prosv5 make && prosv5 upload --icon  'USER003x.bmp' --slot 2

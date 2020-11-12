@@ -1,34 +1,15 @@
 #pragma once
-#include "api.h"
 #include "okapi/api.hpp"
 using namespace okapi;
 
-// static pros::Controller Primary(pros::E_CONTROLLER_MASTER);
+static Controller Primary(ControllerId::master);
 
-// static pros::Motor LF(15, false);
-// static pros::Motor LB(14, false);
+static IMU Inertial(19, IMUAxes::z);
 
-// static pros::Motor RF(16, true);
-// static pros::Motor RB(17, true);
+static ChassisControllerBuilder ChasisBuilder = ChassisControllerBuilder();
+static std::shared_ptr<ChassisController> Chasis;
 
-// static pros::Motor LI(11, true);
-// static pros::Motor RI(20, false);
-
-// static pros::Motor Elevator(12, true);
-// static pros::Motor Flywheel(10, false);
-
-// static pros::Imu Inertial(19);
-
-static okapi::Controller Primary(okapi::ControllerId::master);
-
-static okapi::IMU Inertial(19, okapi::IMUAxes::z);
-
-static okapi::ChassisControllerBuilder ChasisBuilder = okapi::ChassisControllerBuilder();
-static std::shared_ptr<okapi::ChassisController> Chasis;
-
-static Motor LeftIntake(-11);
-static Motor RightIntake(20);
-static MotorGroup Intake({LeftIntake, RightIntake});
+static MotorGroup Intake({Motor(-11), Motor(20)});
 static Motor Elevator(-12);
 static Motor Flywheel(10);
 

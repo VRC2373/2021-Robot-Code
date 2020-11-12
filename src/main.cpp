@@ -69,28 +69,16 @@ void autonomous() {}
  */
 void opcontrol()
 {
-	int8_t intakeSpeed = 0;
-	// if (pros::competition::is_connected() && !deployed)
-	// 	deploySequence();
+	if (pros::competition::is_connected() && !deployed)
+		deploySequence();
 
 	while (true)
 	{
+		Chasis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
-		Chasis->getModel()->forward(Primary.getAnalog(ControllerAnalog::leftY));
-		Chasis->getModel()->rotate(Primary.getAnalog(ControllerAnalog::rightX));
+		Intake.moveVelocity(Primary.getDigital(ControllerDigital::R1) ? 200 : Primary.getDigital(ControllerDigital::R2) ? -200 : 0);
 
-		// drivebaseX = Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		// drivebaseY = Primary.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		// LF = drivebaseY + drivebaseX;
-		// LB = drivebaseY + drivebaseX;
-		// RF = drivebaseY - drivebaseX;
-		// RB = drivebaseY - drivebaseX;
-
-		// intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R2) ? -127 : 0;
-		// LI = intakeSpeed;
-		// RI = intakeSpeed;
-
-		// Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
-		// Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L2) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+		Elevator.moveVelocity(Primary.getDigital(ControllerDigital::L1) || Primary.getDigital(ControllerDigital::L2) ? 200 : Primary.getDigital(ControllerDigital::B) ? -200 : 0);
+		Flywheel.moveVelocity(Primary.getDigital(ControllerDigital::L1) ? 200 : 0);
 	}
 }
