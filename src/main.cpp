@@ -8,7 +8,17 @@ uint8_t autonSelected = 0;
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {}
+void initialize()
+{
+	// Build Chasis
+	ChasisBuilder.withMotors(
+					 {15, 14},	// Left motors are 15 & 14
+					 {-16, -17} // Right motors are 16 & 17 (reversed)
+					 )
+		.withDimensions(okapi::AbstractMotor::gearset::green, {{4_in, 10_in}, okapi::imev5GreenTPR});
+	// .withOdometry(Inertial);
+	Chasis = ChasisBuilder.build();
+}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -60,25 +70,27 @@ void autonomous() {}
 void opcontrol()
 {
 	int8_t intakeSpeed = 0;
-	int8_t drivebaseX = 0;
-	int8_t drivebaseY = 0;
-	if (pros::competition::is_connected() && !deployed)
-		deploySequence();
+	// if (pros::competition::is_connected() && !deployed)
+	// 	deploySequence();
 
 	while (true)
 	{
-		drivebaseX = Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
-		drivebaseY = Primary.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
-		LF = drivebaseY + drivebaseX;
-		LB = drivebaseY + drivebaseX;
-		RF = drivebaseY - drivebaseX;
-		RB = drivebaseY - drivebaseX;
 
-		intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R2) ? -127 : 0;
-		LI = intakeSpeed;
-		RI = intakeSpeed;
+		Chasis->getModel()->forward(Primary.getAnalog(ControllerAnalog::leftY));
+		Chasis->getModel()->rotate(Primary.getAnalog(ControllerAnalog::rightX));
 
-		Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
-		Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L2) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
+		// drivebaseX = Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X);
+		// drivebaseY = Primary.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y);
+		// LF = drivebaseY + drivebaseX;
+		// LB = drivebaseY + drivebaseX;
+		// RF = drivebaseY - drivebaseX;
+		// RB = drivebaseY - drivebaseX;
+
+		// intakeSpeed = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R1) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R2) ? -127 : 0;
+		// LI = intakeSpeed;
+		// RI = intakeSpeed;
+
+		// Flywheel = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) ? 127 : 0;
+		// Elevator = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1) || Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L2) ? 127 : Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B) ? -127 : 0;
 	}
 }
