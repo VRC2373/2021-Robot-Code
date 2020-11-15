@@ -10,14 +10,15 @@ uint8_t autonSelected = 0;
  */
 void initialize()
 {
-	// Build Chasis
-	ChasisBuilder.withMotors(
-					 {15, 14},	// Left motors are 15 & 14
-					 {-16, -17} // Right motors are 16 & 17 (reversed)
-					 )
-		.withDimensions(okapi::AbstractMotor::gearset::green, {{4_in, 10_in}, okapi::imev5GreenTPR});
+	// Build Chassis
+	ChassisBuilder
+		.withMotors(
+			{15, 14},  // Left motors are 15 & 14
+			{-16, -17} // Right motors are 16 & 17 (reversed)
+			)
+		.withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR});
 	// .withOdometry(Inertial);
-	Chasis = ChasisBuilder.build();
+	Chassis = ChassisBuilder.build();
 }
 
 /**
@@ -38,7 +39,36 @@ void disabled() {}
  */
 void competition_initialize()
 {
+	pros::ADIDigitalIn Auto1('A');
+	pros::ADIDigitalIn Auto2('B');
+
 	Inertial.reset();
+
+	lv_obj_t *scr = lv_obj_create(NULL, NULL);
+	lv_scr_load(scr);
+
+	lv_obj_t *autonText = lv_label_create(scr, NULL);
+
+	while (true)
+	{
+		autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : 0;
+		switch (autonSelected)
+		{
+		case 0:
+			lv_label_set_text(autonText, "No Auton Selected");
+			break;
+		case 1:
+			lv_label_set_text(autonText, "Score Preload Auton Selected");
+			break;
+		case 2:
+			lv_label_set_text(autonText, "Auton 2 Selected");
+			break;
+		default:
+			lv_label_set_text(autonText, "Unknown Auton Selected");
+			break;
+		}
+		pros::delay(200);
+	}
 }
 
 /**
@@ -52,7 +82,18 @@ void competition_initialize()
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous()
+{
+	switch (autonSelected)
+	{
+	case 1:
+		auton1();
+		break;
+	case 2:
+		auton2();
+		break;
+	}
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -74,7 +115,7 @@ void opcontrol()
 
 	while (true)
 	{
-		Chasis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
+		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
 		Intake.moveVelocity(Primary.getDigital(ControllerDigital::R1) ? 200 : Primary.getDigital(ControllerDigital::R2) ? -200 : 0);
 
