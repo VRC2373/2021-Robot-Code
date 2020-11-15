@@ -1,8 +1,8 @@
 #include "autons.hpp"
 
-void deploySequence()
+void deploySequence(bool force)
 {
-    if (!deployed)
+    if (!deployed || force)
     {
         deployed = true;
         Elevator.moveVelocity(-200);
@@ -16,12 +16,20 @@ void deploySequence()
 void auton1()
 {
     deploySequence();
+    Intake.moveVelocity(200);
     Elevator.moveVelocity(200);
-    Chassis->moveDistance(5_in);
+    pros::delay(500);
+    Intake.moveVelocity(0);
+    Chassis->moveDistance(15_in);
+    pros::delay(500);
     Flywheel.moveVelocity(200);
-    pros::delay(1000);
+    pros::delay(2000);
     Elevator.moveVelocity(0);
     Flywheel.moveVelocity(0);
+    Chassis->moveDistance(-5_in);
 }
 
-void auton2() {}
+void auton2()
+{
+    deploySequence(true);
+}

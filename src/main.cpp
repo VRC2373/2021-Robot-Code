@@ -8,18 +8,7 @@ uint8_t autonSelected = 0;
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize()
-{
-	// Build Chassis
-	ChassisBuilder
-		.withMotors(
-			{15, 14},  // Left motors are 15 & 14
-			{-16, -17} // Right motors are 16 & 17 (reversed)
-			)
-		.withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR});
-	// .withOdometry(Inertial);
-	Chassis = ChassisBuilder.build();
-}
+void initialize() {}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -39,9 +28,6 @@ void disabled() {}
  */
 void competition_initialize()
 {
-	pros::ADIDigitalIn Auto1('A');
-	pros::ADIDigitalIn Auto2('B');
-
 	Inertial.reset();
 
 	lv_obj_t *scr = lv_obj_create(NULL, NULL);
@@ -61,7 +47,7 @@ void competition_initialize()
 			lv_label_set_text(autonText, "Score Preload Auton Selected");
 			break;
 		case 2:
-			lv_label_set_text(autonText, "Auton 2 Selected");
+			lv_label_set_text(autonText, "\"Just Deploy\" Auton Selected");
 			break;
 		default:
 			lv_label_set_text(autonText, "Unknown Auton Selected");
@@ -84,6 +70,7 @@ void competition_initialize()
  */
 void autonomous()
 {
+	autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : 0;
 	switch (autonSelected)
 	{
 	case 1:
