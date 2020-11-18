@@ -8,7 +8,10 @@ uint8_t autonSelected = 0;
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {}
+void initialize()
+{
+	Inertial.calibrate();
+}
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -28,6 +31,7 @@ void disabled() {}
  */
 void competition_initialize()
 {
+	Inertial.calibrate();
 	Inertial.reset();
 
 	lv_obj_t *scr = lv_obj_create(NULL, NULL);
@@ -47,7 +51,7 @@ void competition_initialize()
 			lv_label_set_text(autonText, "Score Preload Auton Selected");
 			break;
 		case 2:
-			lv_label_set_text(autonText, "\"Just Deploy\" Auton Selected");
+			lv_label_set_text(autonText, "Score Preload and a Tower Auton Selected");
 			break;
 		case 3:
 			lv_label_set_text(autonText, "\"Not sure what to call it\" Auton Selected");
@@ -103,6 +107,10 @@ void autonomous()
  */
 void opcontrol()
 {
+	lv_obj_t *scr = lv_obj_create(NULL, NULL);
+	lv_scr_load(scr);
+
+	lv_obj_t *printout = lv_label_create(scr, NULL);
 	bool elevatorToggle = false;
 
 	if (pros::competition::is_connected() && !deployed)
@@ -110,11 +118,15 @@ void opcontrol()
 
 	while (true)
 	{
+		char buf[32];
+		sprintf(buf, "IMU: %f", Inertial.get());
+		lv_label_set_text(printout, buf);
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
 		Intake.moveVelocity(Primary.getDigital(ControllerDigital::R1) ? 200 : Primary.getDigital(ControllerDigital::R2) ? -200 : 0);
 		elevatorToggle = Primary.getDigital(ControllerDigital::L1) ? !elevatorToggle : elevatorToggle;
 		Elevator.moveVelocity(Primary.getDigital(ControllerDigital::L1) || Primary.getDigital(ControllerDigital::L2) ? 200 : Primary.getDigital(ControllerDigital::B) ? -200 : 0);
 		Flywheel.moveVelocity(Primary.getDigital(ControllerDigital::L1) ? 500 : 0);
+		pros::delay(20);
 	}
 }
