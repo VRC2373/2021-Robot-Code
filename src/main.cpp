@@ -37,7 +37,7 @@ void competition_initialize()
 
 	while (true)
 	{
-		autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : 0;
+		autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : 0;
 		switch (autonSelected)
 		{
 		case 0:
@@ -48,6 +48,9 @@ void competition_initialize()
 			break;
 		case 2:
 			lv_label_set_text(autonText, "\"Just Deploy\" Auton Selected");
+			break;
+		case 3:
+			lv_label_set_text(autonText, "\"Not sure what to call it\" Auton Selected");
 			break;
 		default:
 			lv_label_set_text(autonText, "Unknown Auton Selected");
@@ -79,6 +82,9 @@ void autonomous()
 	case 2:
 		auton2();
 		break;
+	case 3:
+		auton2();
+		break;
 	}
 }
 
@@ -97,6 +103,8 @@ void autonomous()
  */
 void opcontrol()
 {
+	bool elevatorToggle = false;
+
 	if (pros::competition::is_connected() && !deployed)
 		deploySequence();
 
@@ -105,8 +113,8 @@ void opcontrol()
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
 		Intake.moveVelocity(Primary.getDigital(ControllerDigital::R1) ? 200 : Primary.getDigital(ControllerDigital::R2) ? -200 : 0);
-
+		elevatorToggle = Primary.getDigital(ControllerDigital::L1) ? !elevatorToggle : elevatorToggle;
 		Elevator.moveVelocity(Primary.getDigital(ControllerDigital::L1) || Primary.getDigital(ControllerDigital::L2) ? 200 : Primary.getDigital(ControllerDigital::B) ? -200 : 0);
-		Flywheel.moveVelocity(Primary.getDigital(ControllerDigital::L1) ? 200 : 0);
+		Flywheel.moveVelocity(Primary.getDigital(ControllerDigital::L1) ? 500 : 0);
 	}
 }

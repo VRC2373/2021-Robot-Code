@@ -8,6 +8,7 @@ static IMU Inertial(19, IMUAxes::z);
 
 static pros::ADIDigitalIn Auto1('A');
 static pros::ADIDigitalIn Auto2('B');
+static pros::ADIDigitalIn Auto3('C');
 
 static std::shared_ptr<ChassisController> Chassis =
     ChassisControllerBuilder()
@@ -20,6 +21,6 @@ static std::shared_ptr<ChassisController> Chassis =
 
 static MotorGroup Intake({Motor(-11), Motor(20)});
 static Motor Elevator(-12);
-static Motor Flywheel(10);
+static Motor Flywheel(10, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
 
 static bool deployed = false;
