@@ -123,10 +123,10 @@ void opcontrol()
 		lv_label_set_text(printout, buf);
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
-		Intake.moveVelocity(Primary.getDigital(ControllerDigital::R1) ? 200 : Primary.getDigital(ControllerDigital::R2) ? -200 : 0);
-		elevatorToggle = Primary.getDigital(ControllerDigital::L1) ? !elevatorToggle : elevatorToggle;
-		Elevator.moveVelocity(Primary.getDigital(ControllerDigital::L1) || Primary.getDigital(ControllerDigital::L2) ? 200 : Primary.getDigital(ControllerDigital::B) ? -200 : 0);
-		Flywheel.moveVelocity(Primary.getDigital(ControllerDigital::L1) ? 500 : 0);
+		Intake.moveVelocity(btnIntakeIn.isPressed() ? 200 : btnIntakeOut.isPressed() ? -200 : 0);
+		elevatorToggle = btnElevatorToggle.changedToPressed() ? !elevatorToggle : elevatorToggle;
+		Elevator.moveVelocity(elevatorToggle ? 200 : btnElevatorOut.isPressed() ? -200 : 0);
+		Flywheel.moveVelocity(btnFlywheelOut.isPressed() ? 500 : 0);
 		pros::delay(20);
 	}
 }

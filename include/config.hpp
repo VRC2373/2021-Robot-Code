@@ -2,9 +2,8 @@
 #include "okapi/api.hpp"
 using namespace okapi;
 
-static Controller Primary(ControllerId::master);
-
 static IMU Inertial(19, IMUAxes::z);
+static OpticalSensor Vision();
 
 static pros::ADIDigitalIn Auto1('A');
 static pros::ADIDigitalIn Auto2('B');
@@ -22,5 +21,13 @@ static std::shared_ptr<ChassisController> Chassis =
 static MotorGroup Intake({Motor(-11), Motor(20)});
 static Motor Elevator(-12);
 static Motor Flywheel(10, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
+
+// Controller Setup
+static Controller Primary(ControllerId::master);
+static ControllerButton btnIntakeIn(ControllerDigital::R1);
+static ControllerButton btnIntakeOut(ControllerDigital::R2);
+static ControllerButton btnElevatorToggle(ControllerDigital::L2);
+static ControllerButton btnElevatorOut(ControllerDigital::B);
+static ControllerButton btnFlywheelOut(ControllerDigital::L1);
 
 static bool deployed = false;
