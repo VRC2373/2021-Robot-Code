@@ -3,7 +3,7 @@
 using namespace okapi;
 
 static IMU Inertial(19, IMUAxes::z);
-static OpticalSensor Vision();
+static pros::Vision Vision(6, pros::E_VISION_ZERO_CENTER);
 
 static pros::ADIDigitalIn Auto1('A');
 static pros::ADIDigitalIn Auto2('B');
@@ -31,3 +31,4 @@ static ControllerButton btnElevatorOut(ControllerDigital::B);
 static ControllerButton btnFlywheelOut(ControllerDigital::L1);
 
 static bool deployed = false;
+static uint8_t autonSelected = 0;

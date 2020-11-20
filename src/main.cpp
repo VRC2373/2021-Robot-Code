@@ -1,7 +1,5 @@
 #include "main.h"
 
-uint8_t autonSelected = 0;
-
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -10,7 +8,8 @@ uint8_t autonSelected = 0;
  */
 void initialize()
 {
-	Inertial.calibrate();
+	if (!pros::competition::is_connected)
+		Vision.set_wifi_mode(true);
 }
 
 /**
@@ -31,37 +30,8 @@ void disabled() {}
  */
 void competition_initialize()
 {
-	Inertial.calibrate();
-	Inertial.reset();
-
-	lv_obj_t *scr = lv_obj_create(NULL, NULL);
-	lv_scr_load(scr);
-
-	lv_obj_t *autonText = lv_label_create(scr, NULL);
-
-	while (true)
-	{
-		autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : 0;
-		switch (autonSelected)
-		{
-		case 0:
-			lv_label_set_text(autonText, "No Auton Selected");
-			break;
-		case 1:
-			lv_label_set_text(autonText, "Score Preload Auton Selected");
-			break;
-		case 2:
-			lv_label_set_text(autonText, "Score Preload and a Tower Auton Selected");
-			break;
-		case 3:
-			lv_label_set_text(autonText, "\"Not sure what to call it\" Auton Selected");
-			break;
-		default:
-			lv_label_set_text(autonText, "Unknown Auton Selected");
-			break;
-		}
-		pros::delay(200);
-	}
+	Vision.set_wifi_mode(false);
+	autonSelection();
 }
 
 /**
@@ -87,7 +57,7 @@ void autonomous()
 		auton2();
 		break;
 	case 3:
-		auton2();
+		auton3();
 		break;
 	}
 }
@@ -125,8 +95,8 @@ void opcontrol()
 
 		Intake.moveVelocity(btnIntakeIn.isPressed() ? 200 : btnIntakeOut.isPressed() ? -200 : 0);
 		elevatorToggle = btnElevatorToggle.changedToPressed() ? !elevatorToggle : elevatorToggle;
-		Elevator.moveVelocity(elevatorToggle ? 200 : btnElevatorOut.isPressed() ? -200 : 0);
-		Flywheel.moveVelocity(btnFlywheelOut.isPressed() ? 500 : 0);
+		Elevator.moveVelocity(elevatorToggle || btnFlywheelOut.isPressed() ? 200 : btnElevatorOut.isPressed() ? -200 : 0);
+		Flywheel.moveVelocity(btnFlywheelOut.isPressed() ? 500 : btnElevatorOut.isPressed() ? -200 : 0);
 		pros::delay(20);
 	}
 }
