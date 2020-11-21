@@ -8,7 +8,9 @@ static pros::Vision Vision(6, pros::E_VISION_ZERO_CENTER);
 static pros::ADIDigitalIn Auto1('A');
 static pros::ADIDigitalIn Auto2('B');
 static pros::ADIDigitalIn Auto3('C');
+static pros::ADIDigitalIn Auto4('D');
 
+// Chasis Setup
 static std::shared_ptr<ChassisController> Chassis =
     ChassisControllerBuilder()
         .withMotors(
@@ -16,8 +18,22 @@ static std::shared_ptr<ChassisController> Chassis =
             {-16, -17} // Right motors are 16 & 17 (reversed)
             )
         .withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR})
+        .withClosedLoopControllerTimeUtil(100)
+        // .withGains(
+        //     {0.008, 0, 0.0001}, // Distance controller gains
+        //     {0.001, 0, 0.0001}, // Turn controller gains
+        //     {0.0001, 0, 0.0001} // Angle controller gains (helps drive straight)
+        //     )
+        .withMaxVelocity(100)
+        .withLogger(
+            std::make_shared<Logger>(
+                TimeUtilFactory::createDefault().getTimer(), // It needs a Timer
+                "/ser/sout",                                 // Output to the PROS terminal
+                Logger::LogLevel::debug                      // Most verbose log level
+                ))
         .build();
 
+// Actuator Setup
 static MotorGroup Intake({Motor(-11), Motor(20)});
 static Motor Elevator(-12);
 static Motor Flywheel(10, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
@@ -31,4 +47,3 @@ static ControllerButton btnElevatorOut(ControllerDigital::B);
 static ControllerButton btnFlywheelOut(ControllerDigital::L1);
 
 static bool deployed = false;
-static uint8_t autonSelected = 0;

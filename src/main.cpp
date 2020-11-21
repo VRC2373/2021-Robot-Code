@@ -47,19 +47,7 @@ void competition_initialize()
  */
 void autonomous()
 {
-	autonSelected = Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : 0;
-	switch (autonSelected)
-	{
-	case 1:
-		auton1();
-		break;
-	case 2:
-		auton2();
-		break;
-	case 3:
-		auton3();
-		break;
-	}
+	autonController();
 }
 
 /**

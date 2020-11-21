@@ -5,11 +5,11 @@
 
 using namespace okapi;
 
+uint8_t getAuton();
 void autonSelection();
+void autonController();
 
 void deploySequence(bool force = false);
-
-const char *autonNames[] = {"No", "Score Preload", "Score Preload and a Tower", "\"Not sure what to call it\""};
 
 void auton1();
 void auton2();
