@@ -11,7 +11,7 @@ static pros::ADIDigitalIn Auto3('C');
 static pros::ADIDigitalIn Auto4('D');
 
 // Chasis Setup
-static std::shared_ptr<ChassisController> Chassis =
+static std::shared_ptr<OdomChassisController> Chassis =
     ChassisControllerBuilder()
         .withMotors(
             {15, 14},  // Left motors are 15 & 14
@@ -31,7 +31,8 @@ static std::shared_ptr<ChassisController> Chassis =
                 "/ser/sout",                                 // Output to the PROS terminal
                 Logger::LogLevel::debug                      // Most verbose log level
                 ))
-        .build();
+        .withOdometry()
+        .buildOdometry();
 
 // Actuator Setup
 static MotorGroup Intake({Motor(-11), Motor(20)});

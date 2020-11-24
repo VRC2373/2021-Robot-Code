@@ -4,7 +4,8 @@ uint8_t getAuton() { return Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto
 
 void autonSelection()
 {
-    const char *autonNames[4] = {"No", "Score Preload", "Score Preload and a Tower", "Score 2"};
+    const uint8_t numAutons = 4;
+    const char *autonNames[numAutons + 1] = {"No", "Score Preload", "Score Preload and a Tower", "Score 2", "Not sure"};
     lv_obj_t *scr = lv_obj_create(NULL, NULL);
     lv_scr_load(scr);
     char buff[100];
@@ -12,7 +13,7 @@ void autonSelection()
     lv_obj_t *autonText = lv_label_create(scr, NULL);
     while (true)
     {
-        sprintf(buff, "%s Auton Selected", getAuton());
+        sprintf(buff, "%s Auton Selected", getAuton() <= numAutons ? autonNames[getAuton()] : "Unknown");
         lv_label_set_text(autonText, buff);
         pros::delay(200);
     }
@@ -91,15 +92,15 @@ void auton2()
 
 void auton3()
 {
+    Chassis->setState({5.25_ft, 17_in, 0_deg});
+
     // Back out
-    Chassis->moveDistance(-1_ft);
+    Chassis->driveToPoint({4_ft, 17_in}, true);
     deploySequence(true);
 
     // Drive to goal
-    Chassis->turnAngle(-61.39_deg);
     Elevator.moveVelocity(200);
-    Chassis->moveDistanceAsync(17.53_in);
-    pros::delay(2000);
+    Chassis->driveToPoint({5_ft, 0_in}, false, 5_in);
     Chassis->moveDistance(-1_in);
 
     // Score Ball
@@ -108,18 +109,16 @@ void auton3()
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->moveDistance(-17.53_in);
-    Chassis->turnAngle(135.80_deg);
-    Chassis->moveDistanceAsync(44.64_in);
+    Chassis->driveToPoint({4_ft, 17_in}, true);
     Intake.moveVelocity(200);
-    pros::delay(4000);
-    Chassis->moveDistance(-1_in);
+    Chassis->driveToPoint({5.21_in, 5.21_in}, false, 5_in);
 
     // Score Ball
     Flywheel.moveVelocity(500);
     pros::delay(750);
     Flywheel.moveVelocity(0);
     Intake.moveVelocity(0);
+    Elevator.moveVelocity(0);
 
     // Back out
     Chassis->moveDistance(-10_in);
