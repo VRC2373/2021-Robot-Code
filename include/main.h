@@ -44,6 +44,7 @@
 //#include "pros/api_legacy.h"
 #include "config.hpp"
 #include "autons.hpp"
+#include "graphics.h"
 
 /**
  * If you find doing pros::Motor() to be tedious and you'd prefer just to do

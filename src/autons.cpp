@@ -90,8 +90,13 @@ void auton2()
     Flywheel.moveVelocity(0);
 }
 
+const QLength bumperOffset = 6.5_in + .5_ft;
+
 void auton3()
 {
+    const Point goal1 = {5.5_ft, 0_in};
+    const Point goal2 = {4.5_ft, 5.5_ft};
+
     Chassis->setState({5.25_ft, 17_in, 0_deg});
 
     // Back out
@@ -100,7 +105,7 @@ void auton3()
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint({5_ft, 0_in}, false, 5_in);
+    Chassis->driveToPoint(goal1, false, bumperOffset);
     Chassis->moveDistance(-1_in);
 
     // Score Ball
@@ -111,7 +116,7 @@ void auton3()
     // Back out and move to other goal
     Chassis->driveToPoint({4_ft, 17_in}, true);
     Intake.moveVelocity(200);
-    Chassis->driveToPoint({5.21_in, 5.21_in}, false, 5_in);
+    Chassis->driveToPoint(goal2, false, bumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);

@@ -8,8 +8,7 @@
  */
 void initialize()
 {
-	if (!pros::competition::is_connected)
-		Vision.set_wifi_mode(true);
+	displayGraphics();
 }
 
 /**
@@ -65,20 +64,13 @@ void autonomous()
  */
 void opcontrol()
 {
-	lv_obj_t *scr = lv_obj_create(NULL, NULL);
-	lv_scr_load(scr);
-
-	lv_obj_t *printout = lv_label_create(scr, NULL);
 	bool elevatorToggle = false;
 
-	if (pros::competition::is_connected() && !deployed)
+	if (pros::competition::is_connected())
 		deploySequence();
 
 	while (true)
 	{
-		char buf[32];
-		sprintf(buf, "IMU: %f", Inertial.get());
-		lv_label_set_text(printout, buf);
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
 		Intake.moveVelocity(btnIntakeIn.isPressed() ? 200 : btnIntakeOut.isPressed() ? -200 : 0);
