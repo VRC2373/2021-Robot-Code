@@ -1,39 +1,47 @@
 #include "autons.hpp"
 
-uint8_t getAuton() { return Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : Auto4.get_value() ? 4 : 0; }
+const QLength bumperOffset = 6.5_in + .5_ft;
+
+uint8_t getAuton() { return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : 0) << 1; }
 
 void autonSelection()
 {
-    const uint8_t numAutons = 4;
-    const char *autonNames[numAutons + 1] = {"No", "Score Preload", "Score Preload and a Tower", "Score 2", "Not sure"};
-    lv_obj_t *scr = lv_obj_create(NULL, NULL);
-    lv_scr_load(scr);
+    const uint8_t numAutons = 3;
+    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner"};
     char buff[100];
+    uint8_t selection;
 
-    lv_obj_t *autonText = lv_label_create(scr, NULL);
+    lv_obj_t *autonText = lv_label_create(lv_scr_act(), NULL);
     while (true)
     {
-        sprintf(buff, "%s Auton Selected", getAuton() <= numAutons ? autonNames[getAuton()] : "Unknown");
-        lv_label_set_text(autonText, buff);
-        pros::delay(200);
+        if (getAuton() != selection)
+        {
+            selection = getAuton();
+            sprintf(buff, "%s%s Selected", ((selection >> 1) >= 2) ? (selection & 1) ? "Right Side " : "Left Side " : "", autonNames[selection >> 1]);
+            lv_label_set_text(autonText, buff);
+            sprintf(buff, "%s%s", ((selection >> 1) >= 2) ? (selection & 1) ? "R " : "L " : "", autonNames[selection >> 1]);
+            Primary.clearLine(2);
+            pros::delay(50);
+            Primary.setText(2, 0, buff);
+            pros::delay(50);
+            Primary.rumble(".");
+        }
+        pros::delay(20);
     }
 }
 
 void autonController()
 {
-    switch (getAuton())
+    switch (getAuton() >> 1)
     {
     case 1:
         auton1();
         break;
     case 2:
-        auton2();
+        auton2(getAuton() & 1);
         break;
     case 3:
-        auton3();
-        break;
-    case 4:
-        auton3();
+        auton3(getAuton() & 1);
         break;
     }
 }
@@ -65,42 +73,15 @@ void auton1()
     Chassis->moveDistance(-10_in);
 }
 
-void auton2()
-{
-    // Inertial.calibrate();
-    // Inertial.reset();
-    deploySequence();
-    Elevator.moveVelocity(200);
-    Chassis->moveDistance(-1_in);
-    Flywheel.moveVelocity(500);
-    pros::delay(2000);
-    Flywheel.moveVelocity(0);
-    Chassis->moveDistance(-10_in);
-    Chassis->turnAngle(-180_deg);
-    // while (Inertial.get() < 178 || Inertial.get() > -178)
-    //     Chassis->getModel()->rotate((Inertial.get() > 0) ? 50 : -50);
-    Chassis->moveDistanceAsync(3.5_ft);
-    Intake.moveVelocity(200);
-    pros::delay(2500);
-    Chassis->moveDistance(-1_in);
-    Intake.moveVelocity(0);
-    Flywheel.moveVelocity(500);
-    pros::delay(2000);
-    Elevator.moveVelocity(0);
-    Flywheel.moveVelocity(0);
-}
-
-const QLength bumperOffset = 6.5_in + .5_ft;
-
-void auton3()
+void auton2(bool leftSide)
 {
     const Point goal1 = {5.5_ft, 0_in};
-    const Point goal2 = {4.5_ft, 5.5_ft};
+    const Point goal2 = leftSide ? (Point){4.5_ft, 5.5_ft} : (Point){4.5_ft, -5.5_ft};
 
-    Chassis->setState({5.25_ft, 17_in, 0_deg});
+    Chassis->setState({leftSide ? 5.25_ft : -5.25_ft, 17_in, 0_deg});
 
     // Back out
-    Chassis->driveToPoint({4_ft, 17_in}, true);
+    Chassis->driveToPoint({leftSide ? 4_ft : -4_ft, 17_in}, true);
     deploySequence(true);
 
     // Drive to goal
@@ -114,7 +95,7 @@ void auton3()
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({4_ft, 17_in}, true);
+    Chassis->driveToPoint({leftSide ? 4_ft : -4_ft, 17_in}, true);
     Intake.moveVelocity(200);
     Chassis->driveToPoint(goal2, false, bumperOffset);
 
@@ -129,10 +110,7 @@ void auton3()
     Chassis->moveDistance(-10_in);
 }
 
-void auton4()
+void auton3(bool leftSide)
 {
     deploySequence();
-    Chassis->turnAngle(1.107_deg);
-    Chassis->moveDistanceAsync(5.2_ft);
-    Elevator.moveVelocity(150);
 }

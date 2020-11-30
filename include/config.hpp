@@ -5,10 +5,10 @@ using namespace okapi;
 static IMU Inertial(19, IMUAxes::z);
 static pros::Vision Vision(6, pros::E_VISION_ZERO_CENTER);
 
-static pros::ADIDigitalIn Auto1('A');
-static pros::ADIDigitalIn Auto2('B');
-static pros::ADIDigitalIn Auto3('C');
-static pros::ADIDigitalIn Auto4('D');
+static pros::ADIDigitalIn AutoSide('A');
+static pros::ADIDigitalIn Auto1('B');
+static pros::ADIDigitalIn Auto2('C');
+static pros::ADIDigitalIn Auto3('D');
 
 // Chasis Setup
 static std::shared_ptr<OdomChassisController> Chassis =
@@ -41,10 +41,10 @@ static Motor Flywheel(10, false, AbstractMotor::gearset::blue, AbstractMotor::en
 
 // Controller Setup
 static Controller Primary(ControllerId::master);
-static ControllerButton btnIntakeIn(ControllerDigital::R1);
-static ControllerButton btnIntakeOut(ControllerDigital::R2);
-static ControllerButton btnElevatorToggle(ControllerDigital::L2);
-static ControllerButton btnElevatorOut(ControllerDigital::B);
-static ControllerButton btnFlywheelOut(ControllerDigital::L1);
+static ControllerButton btnIntakeIn(Primary[ControllerDigital::R1]);
+static ControllerButton btnIntakeOut(Primary[ControllerDigital::R2]);
+static ControllerButton btnElevatorToggle(Primary[ControllerDigital::L2]);
+static ControllerButton btnElevatorOut(Primary[ControllerDigital::B]);
+static ControllerButton btnFlywheelOut(Primary[ControllerDigital::L1]);
 
 static bool deployed = false;
