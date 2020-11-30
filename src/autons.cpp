@@ -9,7 +9,7 @@ void autonSelection()
     const uint8_t numAutons = 3;
     const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner"};
     char buff[100];
-    uint8_t selection;
+    static uint8_t selection;
 
     lv_obj_t *autonText = lv_label_create(lv_scr_act(), NULL);
     while (true)
@@ -32,16 +32,17 @@ void autonSelection()
 
 void autonController()
 {
-    switch (getAuton() >> 1)
+    const uint8_t selection = getAuton();
+    switch (selection >> 1)
     {
     case 1:
         auton1();
         break;
     case 2:
-        auton2(getAuton() & 1);
+        auton2(selection & 1);
         break;
     case 3:
-        auton3(getAuton() & 1);
+        auton3(selection & 1);
         break;
     }
 }
@@ -73,15 +74,15 @@ void auton1()
     Chassis->moveDistance(-10_in);
 }
 
-void auton2(bool leftSide)
+void auton2(bool rightSide)
 {
     const Point goal1 = {5.5_ft, 0_in};
-    const Point goal2 = leftSide ? (Point){4.5_ft, 5.5_ft} : (Point){4.5_ft, -5.5_ft};
+    const Point goal2 = rightSide ? (Point){4.5_ft, -5.5_ft} : (Point){4.5_ft, 5.5_ft};
 
-    Chassis->setState({leftSide ? 5.25_ft : -5.25_ft, 17_in, 0_deg});
+    Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
 
     // Back out
-    Chassis->driveToPoint({leftSide ? 4_ft : -4_ft, 17_in}, true);
+    Chassis->driveToPoint({4_ft, rightSide ? -17_in : 17_in}, true);
     deploySequence(true);
 
     // Drive to goal
@@ -95,8 +96,8 @@ void auton2(bool leftSide)
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({leftSide ? 4_ft : -4_ft, 17_in}, true);
-    Intake.moveVelocity(200);
+    Chassis->driveToPoint({4_ft, rightSide ? -17_in : 17_in}, true);
+    // Intake.moveVelocity(200);
     Chassis->driveToPoint(goal2, false, bumperOffset);
 
     // Score Ball
@@ -110,7 +111,21 @@ void auton2(bool leftSide)
     Chassis->moveDistance(-10_in);
 }
 
-void auton3(bool leftSide)
+void auton3(bool rightSide)
 {
+    Chassis->setState({rightSide ? -5.25_ft : 5.25_ft, 17_in, 0_deg});
+    const Point goal = rightSide ? (Point){4.5_ft, 5.5_ft} : (Point){4.5_ft, -5.5_ft};
+
+    Chassis->driveToPoint({-2_ft, Chassis->getState().x}, true);
     deploySequence();
+    Chassis->turnToPoint(goal);
+    Elevator.moveVelocity(200);
+    Intake.moveVelocity(200);
+    Chassis->driveToPoint(goal, false, bumperOffset);
+
+    // Score Ball
+    Flywheel.moveRelative(10.0, 500);
+
+    Elevator.moveVelocity(0);
+    Intake.moveVelocity(0);
 }

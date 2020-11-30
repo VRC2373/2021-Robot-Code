@@ -12,5 +12,5 @@ void autonController();
 void deploySequence(bool force = false);
 
 void auton1();
-void auton2(bool leftSide = true);
-void auton3(bool leftSide = true);
+void auton2(bool rightSide = true);
+void auton3(bool rightSide = true);
