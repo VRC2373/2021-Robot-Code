@@ -77,7 +77,7 @@ void auton1()
 void auton2(bool rightSide)
 {
     const Point goal1 = {5.5_ft, 0_in};
-    const Point goal2 = rightSide ? (Point){4.5_ft, -5.5_ft} : (Point){4.5_ft, 5.5_ft};
+    const Point goal2 = rightSide ? (Point){5.5_ft, -5.5_ft} : (Point){5.5_ft, 5.5_ft};
 
     Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
 
@@ -96,19 +96,22 @@ void auton2(bool rightSide)
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({4_ft, rightSide ? -17_in : 17_in}, true);
-    // Intake.moveVelocity(200);
+    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
+    Intake.moveVelocity(200);
     Chassis->driveToPoint(goal2, false, bumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
+    pros::delay(250);
+    Intake.moveVelocity(0);
     pros::delay(750);
     Flywheel.moveVelocity(0);
-    Intake.moveVelocity(0);
     Elevator.moveVelocity(0);
 
     // Back out
+    Intake.moveVelocity(-100);
     Chassis->moveDistance(-10_in);
+    Intake.moveVelocity(0);
 }
 
 void auton3(bool rightSide)
