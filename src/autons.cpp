@@ -74,11 +74,13 @@ void auton1()
     Chassis->moveDistance(-10_in);
 }
 
+// Goal Positions for Odometry
+const Point centerGoal = {5.5_ft, 0_in};
+const Point leftGoal = {5.5_ft, 5.5_ft};
+const Point rightGoal = {5.5_ft, -5.5_ft};
+
 void auton2(bool rightSide)
 {
-    const Point goal1 = {5.5_ft, 0_in};
-    const Point goal2 = rightSide ? (Point){5.5_ft, -5.5_ft} : (Point){5.5_ft, 5.5_ft};
-
     Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
 
     // Back out
@@ -87,7 +89,7 @@ void auton2(bool rightSide)
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(goal1, false, bumperOffset);
+    Chassis->driveToPoint(centerGoal, false, bumperOffset);
     Chassis->moveDistance(-1_in);
 
     // Score Ball
@@ -98,7 +100,7 @@ void auton2(bool rightSide)
     // Back out and move to other goal
     Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
     Intake.moveVelocity(200);
-    Chassis->driveToPoint(goal2, false, bumperOffset);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -116,19 +118,40 @@ void auton2(bool rightSide)
 
 void auton3(bool rightSide)
 {
-    Chassis->setState({rightSide ? -5.25_ft : 5.25_ft, 17_in, 0_deg});
-    const Point goal = rightSide ? (Point){4.5_ft, 5.5_ft} : (Point){4.5_ft, -5.5_ft};
+    Chassis->setState({5.25_ft, rightSide ? -41_in : 41_in, 0_deg});
 
-    Chassis->driveToPoint({-2_ft, Chassis->getState().x}, true);
+    Chassis->driveToPoint({4_ft, rightSide ? -41_in : 41_in}, true);
     deploySequence();
-    Chassis->turnToPoint(goal);
+    Chassis->turnToPoint(rightSide ? rightGoal : leftGoal);
     Elevator.moveVelocity(200);
     Intake.moveVelocity(200);
-    Chassis->driveToPoint(goal, false, bumperOffset);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
 
     // Score Ball
-    Flywheel.moveRelative(10.0, 500);
+    Flywheel.moveVelocity(500);
 
-    Elevator.moveVelocity(0);
+    bool prevVal = false;
+    for (int balls = 1; balls <= 3;)
+    {
+        pros::delay(10);
+        if (!prevVal && Ultrasonic.get() <= 50 && Ultrasonic.get() != -1)
+        {
+            prevVal = true;
+            balls++;
+            pros::delay(50);
+        }
+        else
+            prevVal = false;
+    }
+
     Intake.moveVelocity(0);
+    pros::delay(500);
+    Flywheel.moveVelocity(0);
+    Elevator.moveVelocity(0);
+    Chassis->moveDistance(-20_in);
+    Flywheel.moveVelocity(500);
+    Elevator.moveVelocity(200);
+    pros::delay(500);
+    Flywheel.moveVelocity(0);
+    Elevator.moveVelocity(0);
 }

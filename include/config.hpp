@@ -10,6 +10,8 @@ static pros::ADIDigitalIn Auto1('B');
 static pros::ADIDigitalIn Auto2('C');
 static pros::ADIDigitalIn Auto3('D');
 
+static ADIUltrasonic Ultrasonic('G', 'H');
+
 // Chasis Setup
 static std::shared_ptr<OdomChassisController> Chassis =
     ChassisControllerBuilder()
