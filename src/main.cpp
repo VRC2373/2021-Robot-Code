@@ -49,6 +49,7 @@ void competition_initialize()
  */
 void autonomous()
 {
+	Optical.setLedPWM(100);
 	autonController();
 }
 
@@ -67,6 +68,7 @@ void autonomous()
  */
 void opcontrol()
 {
+	Optical.setLedPWM(0);
 	bool elevatorToggle = false;
 
 	if (pros::competition::is_connected())

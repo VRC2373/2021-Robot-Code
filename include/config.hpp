@@ -9,8 +9,9 @@ static pros::ADIDigitalIn AutoSide('A');
 static pros::ADIDigitalIn Auto1('B');
 static pros::ADIDigitalIn Auto2('C');
 static pros::ADIDigitalIn Auto3('D');
+static pros::ADIDigitalIn Auto4('E');
 
-static ADIUltrasonic Ultrasonic('G', 'H');
+static OpticalSensor Optical(9);
 
 // Chasis Setup
 static std::shared_ptr<OdomChassisController> Chassis =
@@ -26,7 +27,7 @@ static std::shared_ptr<OdomChassisController> Chassis =
         //     {0.001, 0, 0.0001}, // Turn controller gains
         //     {0.0001, 0, 0.0001} // Angle controller gains (helps drive straight)
         //     )
-        .withMaxVelocity(100)
+        .withMaxVelocity(175)
         .withLogger(
             std::make_shared<Logger>(
                 TimeUtilFactory::createDefault().getTimer(), // It needs a Timer

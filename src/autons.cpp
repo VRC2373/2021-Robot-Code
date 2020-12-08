@@ -2,12 +2,12 @@
 
 const QLength bumperOffset = 6.5_in + .5_ft;
 
-uint8_t getAuton() { return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : 0) << 1; }
+uint8_t getAuton() { return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : Auto4.get_value() ? 4 : 0) << 1; }
 
 void autonSelection()
 {
-    const uint8_t numAutons = 3;
-    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner"};
+    const uint8_t numAutons = 4;
+    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner", "Home Row"};
     char buff[100];
     static uint8_t selection;
 
@@ -43,6 +43,9 @@ void autonController()
         break;
     case 3:
         auton3(selection & 1);
+        break;
+    case 4:
+        homeRow();
         break;
     }
 }
@@ -116,42 +119,116 @@ void auton2(bool rightSide)
     Intake.moveVelocity(0);
 }
 
+// void auton3(bool rightSide)
+// {
+//     Chassis->setState({5.25_ft, rightSide ? -41_in : 41_in, 0_deg});
+
+//     Chassis->driveToPoint({4_ft, rightSide ? -41_in : 41_in}, true);
+//     deploySequence();
+//     Chassis->turnToPoint(rightSide ? rightGoal : leftGoal);
+//     Elevator.moveVelocity(200);
+//     Intake.moveVelocity(200);
+//     Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+
+//     // Score Ball
+//     Flywheel.moveVelocity(500);
+
+//     bool prevVal = false;
+//     for (int balls = 1; balls <= 3;)
+//     {
+//         pros::delay(10);
+//         if (!prevVal && Optical.getRGB().blue > 200 && Optical.getRGB().red < 50)
+//         {
+//             prevVal = true;
+//             balls++;
+//             pros::delay(50);
+//         }
+//         else
+//             prevVal = false;
+//         if (balls == 2)
+//             Intake.moveVelocity(0);
+//     }
+//     Intake.moveVelocity(0);
+//     Flywheel.moveVelocity(0);
+//     Elevator.moveVelocity(0);
+//     Chassis->moveDistance(-20_in);
+//     Flywheel.moveVelocity(500);
+//     Elevator.moveVelocity(200);
+//     pros::delay(500);
+//     Flywheel.moveVelocity(0);
+//     Elevator.moveVelocity(0);
+// }
+
 void auton3(bool rightSide)
 {
-    Chassis->setState({5.25_ft, rightSide ? -41_in : 41_in, 0_deg});
+    while (1)
+    {
+        if (Optical.getProximity() > 100 && Optical.getRGB().blue >= 200)
+        {
+            Elevator.moveVelocity(0);
+            Flywheel.moveVelocity(0);
+            pros::delay(1000);
+            Elevator.moveVelocity(200);
+            Flywheel.moveVelocity(500);
+            while (Optical.getProximity() > 100)
+                ;
+        }
+        Elevator.moveVelocity(200);
+        Flywheel.moveVelocity(500);
+    }
+}
 
-    Chassis->driveToPoint({4_ft, rightSide ? -41_in : 41_in}, true);
-    deploySequence();
-    Chassis->turnToPoint(rightSide ? rightGoal : leftGoal);
+void homeRow(bool rightSide)
+{
+    Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
+
+    // Back out
+    Chassis->moveDistanceAsync(-1.25_ft);
+    deploySequence(true);
+    Chassis->waitUntilSettled();
+
+    // Drive to goal
     Elevator.moveVelocity(200);
+    Chassis->driveToPoint(centerGoal, false, bumperOffset);
+
+    // Score Ball
+    Flywheel.moveVelocity(500);
+    pros::delay(750);
+    Flywheel.moveVelocity(0);
+
+    // Back out and move to other goal
+    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
     Intake.moveVelocity(200);
     Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
-
-    bool prevVal = false;
-    for (int balls = 1; balls <= 3;)
-    {
-        pros::delay(10);
-        if (!prevVal && Ultrasonic.get() <= 50 && Ultrasonic.get() != -1)
-        {
-            prevVal = true;
-            balls++;
-            pros::delay(50);
-        }
-        else
-            prevVal = false;
-    }
-
+    pros::delay(250);
     Intake.moveVelocity(0);
-    pros::delay(500);
+    pros::delay(750);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
-    Chassis->moveDistance(-20_in);
-    Flywheel.moveVelocity(500);
+
+    // Back out
+    Intake.moveVelocity(-100);
+    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
+    Intake.moveVelocity(0);
+
+    // Drive to the other side of the field
+    Chassis->driveToPoint({3_ft, rightSide ? 3_ft : -3_ft});
+    Intake.moveVelocity(200);
     Elevator.moveVelocity(200);
-    pros::delay(500);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+
+    // Score Ball
+    Flywheel.moveVelocity(500);
+    pros::delay(250);
+    Intake.moveVelocity(0);
+    pros::delay(750);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
+
+    // Back out
+    Intake.moveVelocity(-100);
+    Chassis->moveDistance(-10_in);
 }
