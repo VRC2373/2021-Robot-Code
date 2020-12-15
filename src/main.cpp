@@ -85,8 +85,9 @@ void opcontrol()
 
 		Intake.moveVelocity(btnIntakeIn.isPressed() ? 200 : btnIntakeOut.isPressed() ? -200 : 0);
 		elevatorToggle = btnElevatorToggle.changedToPressed() ? !elevatorToggle : elevatorToggle;
-		Elevator.moveVelocity(elevatorToggle || btnFlywheelOut.isPressed() ? 200 : btnElevatorOut.isPressed() ? -200 : 0);
-		Flywheel.moveVelocity(btnFlywheelOut.isPressed() ? 500 : btnElevatorOut.isPressed() ? -200 : 0);
+
+		Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 200 : elevatorToggle && Optical.getProximity() < 100 ? 150 : 0);
+		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 500 : 0);
 		pros::delay(20);
 	}
 }
