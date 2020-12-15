@@ -1,5 +1,7 @@
 #include "main.h"
 
+pros::Task autonSelector(autonSelection, "auton_selector");
+
 /**
  * Runs initialization code. This occurs as soon as the program is started.
  *
@@ -18,7 +20,7 @@ void initialize()
  */
 void disabled()
 {
-	autonSelection();
+	autonSelector.resume();
 }
 
 /**
@@ -33,7 +35,7 @@ void disabled()
 void competition_initialize()
 {
 	Vision.set_wifi_mode(false);
-	autonSelection();
+	autonSelector.resume();
 }
 
 /**
@@ -50,7 +52,9 @@ void competition_initialize()
 void autonomous()
 {
 	Optical.setLedPWM(100);
-	autonController();
+	autonSelector.suspend();
+	runAuton();
+	Optical.setLedPWM(0);
 }
 
 /**
@@ -68,6 +72,7 @@ void autonomous()
  */
 void opcontrol()
 {
+	autonSelector.suspend();
 	Optical.setLedPWM(0);
 	bool elevatorToggle = false;
 
