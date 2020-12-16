@@ -27,7 +27,7 @@ static std::shared_ptr<OdomChassisController> Chassis =
         //     {0.001, 0, 0.0001}, // Turn controller gains
         //     {0.0001, 0, 0.0001} // Angle controller gains (helps drive straight)
         //     )
-        .withMaxVelocity(175)
+        .withMaxVelocity(80)
         .withLogger(
             std::make_shared<Logger>(
                 TimeUtilFactory::createDefault().getTimer(), // It needs a Timer

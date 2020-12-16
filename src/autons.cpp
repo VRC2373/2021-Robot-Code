@@ -83,8 +83,8 @@ void auton1(bool rightSide)
 
 // Goal Positions for Odometry
 const Point centerGoal = {5.5_ft, 0_in};
-const Point leftGoal = {5.5_ft, 5.5_ft};
-const Point rightGoal = {5.5_ft, -5.5_ft};
+const Point leftGoal = {6_ft, 5.5_ft};
+const Point rightGoal = {6_ft, -5.5_ft};
 
 void auton2(bool rightSide)
 {
@@ -113,7 +113,7 @@ void auton2(bool rightSide)
     Flywheel.moveVelocity(500);
     pros::delay(250);
     Intake.moveVelocity(0);
-    pros::delay(750);
+    pros::delay(1500);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
 
