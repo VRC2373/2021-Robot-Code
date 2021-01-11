@@ -10,7 +10,7 @@ pros::Task autonSelector(autonSelection, "auton_selector");
  */
 void initialize()
 {
-	displayGraphics();
+	// displayGraphics();
 }
 
 /**
@@ -34,7 +34,6 @@ void disabled()
  */
 void competition_initialize()
 {
-	Vision.set_wifi_mode(false);
 	autonSelector.resume();
 }
 
@@ -53,7 +52,24 @@ void autonomous()
 {
 	Optical.setLedPWM(100);
 	autonSelector.suspend();
-	runAuton();
+	switch (getAuton() >> 1)
+	{
+	case 1:
+		auton1();
+		break;
+	case 2:
+		auton2();
+		break;
+	case 3:
+		auton3();
+		break;
+	case 4:
+		homeRow();
+		break;
+	case 5:
+		skills();
+		break;
+	}
 	Optical.setLedPWM(0);
 }
 
@@ -83,11 +99,12 @@ void opcontrol()
 	{
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
-		Intake.moveVelocity(btnIntakeIn.isPressed() ? 200 : btnIntakeOut.isPressed() ? -200 : 0);
-		elevatorToggle = btnElevatorToggle.changedToPressed() ? !elevatorToggle : elevatorToggle;
+		Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100 : 0);
 
+		if (btnElevatorToggle.changedToPressed())
+			elevatorToggle = !elevatorToggle;
 		Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 200 : elevatorToggle && Optical.getProximity() < 100 ? 150 : 0);
-		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 500 : 0);
+		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550 : 0);
 		pros::delay(20);
 	}
 }

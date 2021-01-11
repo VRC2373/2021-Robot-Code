@@ -1,13 +1,14 @@
-#include "autons.hpp"
+#include "autonomous.hpp"
 
-const QLength bumperOffset = 6.5_in + .5_ft;
-
-uint8_t getAuton() { return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : Auto4.get_value() ? 4 : 0) << 1; }
+uint8_t getAuton()
+{
+    return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : Auto4.get_value() ? 4 : Auto5.get_value() ? 5 : 0) << 1;
+}
 
 void autonSelection()
 {
-    const uint8_t numAutons = 4;
-    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner", "Home Row"};
+    const uint8_t numAutons = 5;
+    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner", "Home Row", "Skills"};
     char buff[100];
     static uint8_t selection;
 
@@ -51,6 +52,9 @@ void runAuton()
     case 4:
         homeRow(selection & 1);
         break;
+    case 5:
+        skills();
+        break;
     }
 }
 
@@ -67,7 +71,7 @@ void deploySequence(bool force)
     }
 }
 
-void auton1(bool rightSide)
+void auton1()
 {
     deploySequence(true);
     Elevator.moveVelocity(200);
@@ -83,8 +87,8 @@ void auton1(bool rightSide)
 
 // Goal Positions for Odometry
 const Point centerGoal = {5.5_ft, 0_in};
-const Point leftGoal = {6_ft, 5.5_ft};
-const Point rightGoal = {6_ft, -5.5_ft};
+const Point leftGoal = {5.6_ft, 5.6_ft};
+const Point rightGoal = {5.6_ft, -5.6_ft};
 
 void auton2(bool rightSide)
 {
@@ -96,7 +100,7 @@ void auton2(bool rightSide)
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(centerGoal, false, bumperOffset);
+    Chassis->driveToPoint(centerGoal, false, BumperOffset);
     Chassis->moveDistance(-1_in);
 
     // Score Ball
@@ -106,19 +110,20 @@ void auton2(bool rightSide)
 
     // Back out and move to other goal
     Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
-    Intake.moveVelocity(200);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+    Intake.moveVelocity(100);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
+    while (Optical.getProximity() < 100)
+        ;
+    Intake.moveVelocity(0);
 
     // Score Ball
     Flywheel.moveVelocity(500);
-    pros::delay(250);
-    Intake.moveVelocity(0);
     pros::delay(1500);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
 
     // Back out
-    Intake.moveVelocity(-100);
+    Intake.moveVelocity(-50);
     Chassis->moveDistance(-10_in);
     Intake.moveVelocity(0);
 }
@@ -131,8 +136,8 @@ void auton3(bool rightSide)
     deploySequence();
     Chassis->turnToPoint(rightSide ? rightGoal : leftGoal);
     Elevator.moveVelocity(200);
-    Intake.moveVelocity(200);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+    Intake.moveVelocity(100);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -169,7 +174,7 @@ void homeRow(bool rightSide)
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(centerGoal, false, bumperOffset);
+    Chassis->driveToPoint(centerGoal, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -178,8 +183,8 @@ void homeRow(bool rightSide)
 
     // Back out and move to other goal
     Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
-    Intake.moveVelocity(200);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+    Intake.moveVelocity(100);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -196,9 +201,9 @@ void homeRow(bool rightSide)
 
     // Drive to the other side of the field
     Chassis->driveToPoint({3_ft, rightSide ? 3_ft : -3_ft});
-    Intake.moveVelocity(200);
+    Intake.moveVelocity(100);
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, bumperOffset);
+    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
