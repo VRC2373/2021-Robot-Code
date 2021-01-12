@@ -67,7 +67,7 @@ void autonomous()
 		homeRow();
 		break;
 	case 5:
-		skills();
+		Chassis->turnAngle(90_deg);
 		break;
 	}
 	Optical.setLedPWM(0);

@@ -4,7 +4,7 @@ void skills()
 {
   // Starts next to the bottom-left wall on the field
   Chassis->setState({-6_ft + 8.75_in, -3_ft, 90_deg});
-  Chassis->setMaxVelocity(80);
+  Chassis->setMaxVelocity(150);
 
   // Deploy before doing anything
   deploySequence();
@@ -19,7 +19,7 @@ void skills()
   Chassis->driveToPoint(GoalG, false, BumperOffset);
   Flywheel.moveVelocity(500);
   Intake.moveVelocity(100);
-  while (Optical.getProximity() < 100 && Optical.getRGB().blue < 200)
+  while (Optical.getProximity() < 100 || Optical.getRGB().blue < 200)
   {
     pros::delay(20);
   }

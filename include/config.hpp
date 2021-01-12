@@ -18,7 +18,8 @@ static std::shared_ptr<OdomChassisController> Chassis =
             {15, 14},  // Left motors are 15 & 14
             {-16, -17} // Right motors are 16 & 17 (reversed)
             )
-        .withDimensions(AbstractMotor::gearset::green, {{4_in, 10_in}, imev5GreenTPR})
+        .withDimensions(AbstractMotor::gearset::green, {{4_in, 11.5_in}, imev5GreenTPR})
+        // .withGains({.008, 0, 0}, {0, 0, 0})
         .withOdometry(StateMode::CARTESIAN)
         .buildOdometry();
 
