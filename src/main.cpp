@@ -67,7 +67,7 @@ void autonomous()
 		homeRow();
 		break;
 	case 5:
-		Chassis->turnAngle(90_deg);
+		skills();
 		break;
 	}
 	Optical.setLedPWM(0);
@@ -99,12 +99,16 @@ void opcontrol()
 	{
 		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
-		Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100 : 0);
+		Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100
+																																								 : 0);
 
 		if (btnElevatorToggle.changedToPressed())
 			elevatorToggle = !elevatorToggle;
-		Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 200 : elevatorToggle && Optical.getProximity() < 100 ? 150 : 0);
-		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550 : 0);
+		Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed()									 ? 200
+																													: elevatorToggle && Optical.getProximity() < 100 ? 150
+																																																					 : 0);
+		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550
+																																												 : 0);
 		pros::delay(20);
 	}
 }

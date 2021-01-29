@@ -2,7 +2,12 @@
 
 uint8_t getAuton()
 {
-    return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2 : Auto3.get_value() ? 3 : Auto4.get_value() ? 4 : Auto5.get_value() ? 5 : 0) << 1;
+    return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2
+                                                       : Auto3.get_value()   ? 3
+                                                       : Auto4.get_value()   ? 4
+                                                       : Auto5.get_value()   ? 5
+                                                                             : 0)
+                                      << 1;
 }
 
 void autonSelection()
@@ -165,16 +170,17 @@ void auton3(bool rightSide)
 
 void homeRow(bool rightSide)
 {
-    Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
+    Chassis->setState({-6_ft + (17_in / 2), 2_ft - (14_in / 2), 90_deg});
+    Chassis->setMaxVelocity(100);
 
     // Back out
-    Chassis->moveDistanceAsync(-1.25_ft);
+    Chassis->moveDistanceAsync(1.25_ft);
     deploySequence(true);
     Chassis->waitUntilSettled();
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(centerGoal, false, BumperOffset);
+    Chassis->driveToPoint(GoalD, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -182,28 +188,28 @@ void homeRow(bool rightSide)
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
+    Chassis->driveToPoint({-3_ft, 3_ft}, true);
     Intake.moveVelocity(100);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(GoalA, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
     pros::delay(250);
     Intake.moveVelocity(0);
-    pros::delay(750);
+    pros::delay(500);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
 
     // Back out
     Intake.moveVelocity(-100);
-    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
+    Chassis->driveToPoint({-3_ft, 3_ft}, true);
     Intake.moveVelocity(0);
 
     // Drive to the other side of the field
-    Chassis->driveToPoint({3_ft, rightSide ? 3_ft : -3_ft});
+    Chassis->driveToPoint({-3_ft, -3_ft});
     Intake.moveVelocity(100);
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(GoalG, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
