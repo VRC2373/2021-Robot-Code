@@ -5,6 +5,19 @@
 
 using namespace okapi;
 
+struct auton
+{
+  const std::string name;
+  void (*run)();
+};
+
+enum side
+{
+  LEFT,
+  RIGHT,
+  NEITHER
+};
+
 const QLength BumperOffset = 6.5_in + .5_ft;
 const Point GoalA = {-5.5_ft, 5.5_ft};
 const Point GoalB = {0_ft, 5.5_ft};
@@ -16,15 +29,22 @@ const Point GoalG = {-5.5_ft, -5.5_ft};
 const Point GoalH = {0_ft, -5.5_ft};
 const Point GoalI = {5.5_ft, -5.5_ft};
 
-uint8_t getAuton();
+static uint8_t selectedAuton = 0;
+static side autonSide = NEITHER;
 void autonSelection();
-void runAuton();
 
 void deploySequence(bool force = false);
 
 void auton1();
-void auton2(bool rightSide = false);
-void auton3(bool rightSide = false);
-void homeRow(bool rightSide = false);
+void auton2();
+void auton3();
+void homeRow();
 
 void skills();
+
+static std::vector<auton> autons{
+    {"Auton 1", auton1},
+    {"Auton 2", auton2},
+    {"Auton 3", auton3},
+    {"Home Row", homeRow},
+    {"Skills", skills}};

@@ -1,6 +1,6 @@
 #include "main.h"
 
-pros::Task autonSelector(autonSelection, "auton_selector");
+// pros::Task autonSelector(autonSelection, "auton_selector");
 
 /**
  * Runs initialization code. This occurs as soon as the program is started.
@@ -10,7 +10,7 @@ pros::Task autonSelector(autonSelection, "auton_selector");
  */
 void initialize()
 {
-	// displayGraphics();
+    // displayGraphics();
 }
 
 /**
@@ -20,7 +20,7 @@ void initialize()
  */
 void disabled()
 {
-	autonSelector.resume();
+    // autonSelector.resume();
 }
 
 /**
@@ -34,7 +34,8 @@ void disabled()
  */
 void competition_initialize()
 {
-	autonSelector.resume();
+    // autonSelector.resume();
+    // autonSelection();
 }
 
 /**
@@ -50,27 +51,10 @@ void competition_initialize()
  */
 void autonomous()
 {
-	Optical.setLedPWM(100);
-	autonSelector.suspend();
-	switch (getAuton() >> 1)
-	{
-	case 1:
-		auton1();
-		break;
-	case 2:
-		auton2();
-		break;
-	case 3:
-		auton3();
-		break;
-	case 4:
-		homeRow();
-		break;
-	case 5:
-		skills();
-		break;
-	}
-	Optical.setLedPWM(0);
+    Optical.setLedPWM(100);
+    // autonSelector.suspend();
+    autons[selectedAuton].run();
+    Optical.setLedPWM(0);
 }
 
 /**
@@ -88,27 +72,27 @@ void autonomous()
  */
 void opcontrol()
 {
-	autonSelector.suspend();
-	Optical.setLedPWM(0);
-	bool elevatorToggle = false;
+    // autonSelector.suspend();
+    Optical.setLedPWM(0);
+    bool elevatorToggle = false;
 
-	if (pros::competition::is_connected())
-		deploySequence();
+    if (pros::competition::is_connected())
+        deploySequence();
 
-	while (true)
-	{
-		Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
+    while (true)
+    {
+        Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
 
-		Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100
-																																								 : 0);
+        Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100
+                                                                                     : 0);
 
-		if (btnElevatorToggle.changedToPressed())
-			elevatorToggle = !elevatorToggle;
-		Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed()									 ? 200
-																													: elevatorToggle && Optical.getProximity() < 100 ? 150
-																																																					 : 0);
-		Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550
-																																												 : 0);
-		pros::delay(20);
-	}
+        if (btnElevatorToggle.changedToPressed())
+            elevatorToggle = !elevatorToggle;
+        Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed()                   ? 200
+                                                              : elevatorToggle && Optical.getProximity() < 100 ? 150
+                                                                                                               : 0);
+        Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550
+                                                                                             : 0);
+        pros::delay(20);
+    }
 }

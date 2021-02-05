@@ -2,13 +2,6 @@
 #include "okapi/api.hpp"
 using namespace okapi;
 
-static pros::ADIDigitalIn AutoSide('A');
-static pros::ADIDigitalIn Auto1('B');
-static pros::ADIDigitalIn Auto2('C');
-static pros::ADIDigitalIn Auto3('D');
-static pros::ADIDigitalIn Auto4('E');
-static pros::ADIDigitalIn Auto5('F');
-
 static OpticalSensor Optical(9);
 
 // Chasis Setup
@@ -19,7 +12,7 @@ static std::shared_ptr<OdomChassisController> Chassis =
             {-16, -17} // Right motors are 16 & 17 (reversed)
             )
         .withDimensions(AbstractMotor::gearset::green, {{4_in, 11.5_in}, imev5GreenTPR})
-        // .withGains({.008, 0, 0}, {0, 0, 0})
+        // .withGains({3, 0, 0}, {0, 0, 0})
         .withOdometry(StateMode::CARTESIAN)
         .buildOdometry();
 

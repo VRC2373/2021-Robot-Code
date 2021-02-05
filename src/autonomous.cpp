@@ -1,65 +1,38 @@
 #include "autonomous.hpp"
 
-uint8_t getAuton()
-{
-    return AutoSide.get_value() | (Auto1.get_value() ? 1 : Auto2.get_value() ? 2
-                                                       : Auto3.get_value()   ? 3
-                                                       : Auto4.get_value()   ? 4
-                                                       : Auto5.get_value()   ? 5
-                                                                             : 0)
-                                      << 1;
-}
-
 void autonSelection()
 {
-    const uint8_t numAutons = 5;
-    const char *autonNames[numAutons + 1] = {"None", "Score Preload", "Score 2", "Solid Color Corner", "Home Row", "Skills"};
-    char buff[100];
-    static uint8_t selection;
-
     lv_obj_t *autonText = lv_label_create(lv_scr_act(), NULL);
+    std::string output;
+
+    uint8_t prevSelection = selectedAuton;
     while (true)
     {
-        if (getAuton() != selection)
-        {
-            selection = getAuton();
+        if (Primary[ControllerDigital::up].changedToPressed())
+            selectedAuton++;
+        if (Primary[ControllerDigital::down].changedToPressed())
+            selectedAuton--;
+        if (Primary[ControllerDigital::left].changedToPressed())
+            autonSide = LEFT;
+        if (Primary[ControllerDigital::right].changedToPressed())
+            autonSide = RIGHT;
+        if (autons.size() > 1)
+            selectedAuton %= autons.size() - 1;
 
-            // Print chosen auton to Brain screen
-            sprintf(buff, "%s%s Selected", ((selection >> 1) >= 2) ? (selection & 1) ? "Right Side " : "Left Side " : "", autonNames[selection >> 1]);
-            lv_label_set_text(autonText, buff);
+        output = "";
+        if (autonSide == LEFT)
+            output = "L";
+        if (autonSide == RIGHT)
+            output = "R";
 
-            // Print to Controller screen
-            sprintf(buff, "%s%s", ((selection >> 1) >= 2) ? (selection & 1) ? "R " : "L " : "", autonNames[selection >> 1]);
-            Primary.clearLine(2);
-            pros::delay(50);
-            Primary.setText(2, 0, buff);
-            pros::delay(50);
-            Primary.rumble(".");
-        }
+        // Print to Controller screen
+        Primary.clearLine(2);
+        pros::delay(50);
+        Primary.setText(2, 0, autons.at(selectedAuton).name);
+        // pros::delay(50);
+        // Primary.rumble(".");
+
         pros::delay(20);
-    }
-}
-
-void runAuton()
-{
-    uint8_t selection = getAuton();
-    switch (selection >> 1)
-    {
-    case 1:
-        auton1();
-        break;
-    case 2:
-        auton2(selection & 1);
-        break;
-    case 3:
-        auton3(selection & 1);
-        break;
-    case 4:
-        homeRow(selection & 1);
-        break;
-    case 5:
-        skills();
-        break;
     }
 }
 
@@ -95,12 +68,12 @@ const Point centerGoal = {5.5_ft, 0_in};
 const Point leftGoal = {5.6_ft, 5.6_ft};
 const Point rightGoal = {5.6_ft, -5.6_ft};
 
-void auton2(bool rightSide)
+void auton2()
 {
-    Chassis->setState({5.25_ft, rightSide ? -17_in : 17_in, 0_deg});
+    Chassis->setState({5.25_ft, 17_in, 0_deg});
 
     // Back out
-    Chassis->driveToPoint({4_ft, rightSide ? -17_in : 17_in}, true);
+    Chassis->driveToPoint({4_ft, 17_in}, true);
     deploySequence(true);
 
     // Drive to goal
@@ -114,9 +87,9 @@ void auton2(bool rightSide)
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({3_ft, rightSide ? -3_ft : 3_ft}, true);
+    Chassis->driveToPoint({3_ft, 3_ft}, true);
     Intake.moveVelocity(100);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(leftGoal, false, BumperOffset);
     while (Optical.getProximity() < 100)
         ;
     Intake.moveVelocity(0);
@@ -133,16 +106,16 @@ void auton2(bool rightSide)
     Intake.moveVelocity(0);
 }
 
-void auton3(bool rightSide)
+void auton3()
 {
-    Chassis->setState({5.25_ft, rightSide ? -41_in : 41_in, 0_deg});
+    Chassis->setState({5.25_ft, 41_in, 0_deg});
 
-    Chassis->driveToPoint({4_ft, rightSide ? -41_in : 41_in}, true);
+    Chassis->driveToPoint({4_ft, 41_in}, true);
     deploySequence();
-    Chassis->turnToPoint(rightSide ? rightGoal : leftGoal);
+    Chassis->turnToPoint(leftGoal);
     Elevator.moveVelocity(200);
     Intake.moveVelocity(100);
-    Chassis->driveToPoint(rightSide ? rightGoal : leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(leftGoal, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
@@ -168,7 +141,7 @@ void auton3(bool rightSide)
     Elevator.moveVelocity(0);
 }
 
-void homeRow(bool rightSide)
+void homeRow()
 {
     Chassis->setState({-6_ft + (17_in / 2), 2_ft - (14_in / 2), 90_deg});
     Chassis->setMaxVelocity(100);
