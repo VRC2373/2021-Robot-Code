@@ -81,7 +81,7 @@ void opcontrol()
 
     while (true)
     {
-        Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+        Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
         Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100
                                                                                      : 0);

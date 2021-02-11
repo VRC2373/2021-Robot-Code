@@ -2,7 +2,6 @@
 
 void autonSelection()
 {
-    lv_obj_t *autonText = lv_label_create(lv_scr_act(), NULL);
     std::string output;
 
     uint8_t prevSelection = selectedAuton;
@@ -19,18 +18,16 @@ void autonSelection()
         if (autons.size() > 1)
             selectedAuton %= autons.size() - 1;
 
-        output = "";
         if (autonSide == LEFT)
             output = "L";
         if (autonSide == RIGHT)
             output = "R";
 
         // Print to Controller screen
+        pros::delay(50);
         Primary.clearLine(2);
         pros::delay(50);
-        Primary.setText(2, 0, autons.at(selectedAuton).name);
-        // pros::delay(50);
-        // Primary.rumble(".");
+        Primary.setText(2, 0, autons[selectedAuton].name);
 
         pros::delay(20);
     }

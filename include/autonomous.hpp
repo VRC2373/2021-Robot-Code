@@ -7,15 +7,15 @@ using namespace okapi;
 
 struct auton
 {
-  const std::string name;
-  void (*run)();
+    const std::string name;
+    void (*run)();
 };
 
 enum side
 {
-  LEFT,
-  RIGHT,
-  NEITHER
+    LEFT,
+    RIGHT,
+    NEITHER
 };
 
 const QLength BumperOffset = 6.5_in + .5_ft;
@@ -43,6 +43,7 @@ void homeRow();
 void skills();
 
 static std::vector<auton> autons{
+    {"None", [] {}},
     {"Auton 1", auton1},
     {"Auton 2", auton2},
     {"Auton 3", auton3},
