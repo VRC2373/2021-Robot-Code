@@ -6,9 +6,9 @@ static OpticalSensor Optical(1);
 static IMU Inertial(11, IMUAxes::x);
 
 // Actuator Setup
-static MotorGroup Intake({Motor(-18), Motor(8)});
-static Motor Elevator(-7, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
-static Motor Flywheel(6, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
+static MotorGroup Intake({Motor(18), Motor(-8)});
+static Motor Elevator(7, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
+static Motor Flywheel(16, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
 
 // Controller Setup
 static Controller Primary(ControllerId::master);
@@ -22,10 +22,10 @@ static ControllerButton btnFlywheelOut(Primary[ControllerDigital::L1]);
 static std::shared_ptr<OdomChassisController> Chassis =
     ChassisControllerBuilder()
         .withMotors(
-            {19, 20}, // Left motors are 15 & 14
-            {-9, -10} // Right motors are 16 & 17 (reversed)
+            {-19, 20}, // Left motors are 15 & 14
+            {9, -10}   // Right motors are 16 & 17 (reversed)
             )
-        .withDimensions(AbstractMotor::gearset::green, {{4_in, 11.5_in}, imev5GreenTPR})
+        .withDimensions(AbstractMotor::gearset::green, {{4_in, 11_in}, imev5GreenTPR})
         // .withGains({3, 0, 0}, {0, 0, 0})
         .withOdometry(StateMode::CARTESIAN)
         .buildOdometry();

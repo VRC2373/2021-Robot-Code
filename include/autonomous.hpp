@@ -12,7 +12,7 @@ enum side
     NEITHER
 };
 
-const QLength BumperOffset = 6.5_in + .5_ft;
+const QLength BumperOffset = 9.5_in;
 const Point GoalA = {-5.5_ft, 5.5_ft};
 const Point GoalB = {0_ft, 5.5_ft};
 const Point GoalC = {5.5_ft, 5.5_ft};
@@ -23,12 +23,13 @@ const Point GoalG = {-5.5_ft, -5.5_ft};
 const Point GoalH = {0_ft, -5.5_ft};
 const Point GoalI = {5.5_ft, -5.5_ft};
 
-unsigned int getPins();
+uint8_t getPins();
 
 void deploySequence(bool force = false);
 
-void auton1();
-void auton2();
+void oneBall();
+void twoBall();
+void twoBallHood();
 void auton3();
 void homeRow();
 

@@ -1,10 +1,10 @@
 #include "autonomous.hpp"
 
-unsigned int getPins()
+uint8_t getPins()
 {
     unsigned int pins = 0;
-    for (int i = 1; i <= 8; i++)
-        pins |= (pros::ADIDigitalIn(i).get_value() & 1) << i;
+    for (int i = 0; i < 8; i++)
+        pins |= (pros::ADIDigitalIn(i + 1).get_value() & 1) << i;
     return pins;
 };
 
@@ -14,58 +14,57 @@ void deploySequence(bool force)
     {
         Flywheel.moveVelocity(200);
         pros::delay(400);
-        Elevator.moveVelocity(0);
+        Flywheel.moveVelocity(0);
         deployed = true;
     }
 }
 
-void auton1()
+void oneBall()
 {
+    Chassis->setMaxVelocity(50);
     deploySequence(true);
-    Elevator.moveVelocity(200);
+    Elevator.moveVelocity(500);
+    Intake.moveVelocity(75);
     Chassis->moveDistanceAsync(15_in);
-    pros::delay(1500);
+    pros::delay(3000);
+    Intake.moveVelocity(0);
     Chassis->moveDistance(-1_in);
-    Flywheel.moveVelocity(500);
+    Flywheel.moveVelocity(600);
     pros::delay(2000);
     Elevator.moveVelocity(0);
     Flywheel.moveVelocity(0);
+    Chassis->setMaxVelocity(200);
     Chassis->moveDistance(-10_in);
 }
 
-// Goal Positions for Odometry
-const Point centerGoal = {5.5_ft, 0_in};
-const Point leftGoal = {5.6_ft, 5.6_ft};
-const Point rightGoal = {5.6_ft, -5.6_ft};
-
-void auton2()
+void twoBall()
 {
-    Chassis->setState({5.25_ft, 17_in, 0_deg});
+    Chassis->setState({-63_in, 17_in, 270_deg});
 
     // Back out
-    Chassis->driveToPoint({4_ft, 17_in}, true);
+    Chassis->driveToPoint({-4_ft, 17_in}, true);
     deploySequence(true);
 
     // Drive to goal
     Elevator.moveVelocity(200);
-    Chassis->driveToPoint(centerGoal, false, BumperOffset);
-    Chassis->moveDistance(-1_in);
+    Chassis->driveToPoint(GoalD, false, BumperOffset);
+    // Chassis->moveDistance(-1_in);
 
     // Score Ball
-    Flywheel.moveVelocity(500);
+    Flywheel.moveVelocity(600);
     pros::delay(750);
     Flywheel.moveVelocity(0);
 
     // Back out and move to other goal
-    Chassis->driveToPoint({3_ft, 3_ft}, true);
+    Chassis->driveToPoint({-3_ft, 3_ft}, true);
     Intake.moveVelocity(100);
-    Chassis->driveToPoint(leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(GoalA, false, BumperOffset);
     while (Optical.getProximity() < 100)
         ;
     Intake.moveVelocity(0);
 
     // Score Ball
-    Flywheel.moveVelocity(500);
+    Flywheel.moveVelocity(600);
     pros::delay(1500);
     Flywheel.moveVelocity(0);
     Elevator.moveVelocity(0);
@@ -76,16 +75,36 @@ void auton2()
     Intake.moveVelocity(0);
 }
 
+void twoBallHood()
+{
+    Chassis->setState({-59.5_in, 12.12_in, 30_deg});
+    deploySequence(true);
+    Chassis->driveToPoint({-3_ft, 3_ft});
+    Chassis->turnToPoint(GoalA);
+    Intake.moveVelocity(200);
+    Elevator.moveVelocity(200);
+
+    //distance wrong
+    Chassis->moveDistanceAsync(44.91_in);
+    pros::delay(1500);
+    Intake.moveVelocity(0);
+    Flywheel.moveVelocity(600);
+    pros::delay(1500);
+    Chassis->moveDistanceAsync(-10_in);
+    Elevator.moveVelocity(0);
+    Flywheel.moveVelocity(0);
+}
+
 void auton3()
 {
     Chassis->setState({5.25_ft, 41_in, 0_deg});
 
     Chassis->driveToPoint({4_ft, 41_in}, true);
     deploySequence();
-    Chassis->turnToPoint(leftGoal);
+    Chassis->turnToPoint(GoalC);
     Elevator.moveVelocity(200);
     Intake.moveVelocity(100);
-    Chassis->driveToPoint(leftGoal, false, BumperOffset);
+    Chassis->driveToPoint(GoalC, false, BumperOffset);
 
     // Score Ball
     Flywheel.moveVelocity(500);
