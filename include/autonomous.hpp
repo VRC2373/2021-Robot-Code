@@ -5,12 +5,6 @@
 
 using namespace okapi;
 
-struct auton
-{
-    const std::string name;
-    void (*run)();
-};
-
 enum side
 {
     LEFT,
@@ -29,9 +23,7 @@ const Point GoalG = {-5.5_ft, -5.5_ft};
 const Point GoalH = {0_ft, -5.5_ft};
 const Point GoalI = {5.5_ft, -5.5_ft};
 
-static uint8_t selectedAuton = 0;
-static side autonSide = NEITHER;
-void autonSelection();
+unsigned int getPins();
 
 void deploySequence(bool force = false);
 
@@ -41,11 +33,3 @@ void auton3();
 void homeRow();
 
 void skills();
-
-static std::vector<auton> autons{
-    {"None", [] {}},
-    {"Auton 1", auton1},
-    {"Auton 2", auton2},
-    {"Auton 3", auton3},
-    {"Home Row", homeRow},
-    {"Skills", skills}};

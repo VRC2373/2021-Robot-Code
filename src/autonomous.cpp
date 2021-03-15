@@ -1,48 +1,21 @@
 #include "autonomous.hpp"
 
-void autonSelection()
+unsigned int getPins()
 {
-    std::string output;
-
-    uint8_t prevSelection = selectedAuton;
-    while (true)
-    {
-        if (Primary[ControllerDigital::up].changedToPressed())
-            selectedAuton++;
-        if (Primary[ControllerDigital::down].changedToPressed())
-            selectedAuton--;
-        if (Primary[ControllerDigital::left].changedToPressed())
-            autonSide = LEFT;
-        if (Primary[ControllerDigital::right].changedToPressed())
-            autonSide = RIGHT;
-        if (autons.size() > 1)
-            selectedAuton %= autons.size() - 1;
-
-        if (autonSide == LEFT)
-            output = "L";
-        if (autonSide == RIGHT)
-            output = "R";
-
-        // Print to Controller screen
-        pros::delay(50);
-        Primary.clearLine(2);
-        pros::delay(50);
-        Primary.setText(2, 0, autons[selectedAuton].name);
-
-        pros::delay(20);
-    }
-}
+    unsigned int pins = 0;
+    for (int i = 1; i <= 8; i++)
+        pins |= (pros::ADIDigitalIn(i).get_value() & 1) << i;
+    return pins;
+};
 
 void deploySequence(bool force)
 {
     if (!deployed || force)
     {
-        deployed = true;
-        Elevator.moveVelocity(-200);
         Flywheel.moveVelocity(200);
         pros::delay(400);
         Elevator.moveVelocity(0);
-        Flywheel.moveVelocity(0);
+        deployed = true;
     }
 }
 

@@ -34,8 +34,6 @@ void disabled()
  */
 void competition_initialize()
 {
-    // autonSelector.resume();
-    // autonSelection();
 }
 
 /**
@@ -52,9 +50,24 @@ void competition_initialize()
 void autonomous()
 {
     Optical.setLedPWM(100);
-    // autonSelector.suspend();
-    autons[selectedAuton].run();
-    Optical.setLedPWM(0);
+    const unsigned int pins = getPins();
+    for (unsigned int bit = 1; pins >= bit; bit *= 2)
+        if (pins & bit)
+            switch (bit)
+            {
+            case 1:
+                auton1();
+                return;
+            case 2:
+                auton2();
+                return;
+            case 3:
+                auton3();
+                return;
+            case 4:
+                skills();
+                return;
+            }
 }
 
 /**
@@ -72,7 +85,6 @@ void autonomous()
  */
 void opcontrol()
 {
-    // autonSelector.suspend();
     Optical.setLedPWM(0);
     bool elevatorToggle = false;
 
@@ -81,18 +93,27 @@ void opcontrol()
 
     while (true)
     {
-        Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
+        if (!(getPins() & 0x10000000))
+            Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
+        else
+            Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
 
-        Intake.moveVelocity(btnIntakeIn.isPressed() ? 100 : btnIntakeOut.isPressed() ? -100
-                                                                                     : 0);
+        Intake.moveVelocity(
+            btnIntakeIn.isPressed()    ? 100
+            : btnIntakeOut.isPressed() ? -100
+                                       : 0);
 
         if (btnElevatorToggle.changedToPressed())
             elevatorToggle = !elevatorToggle;
-        Elevator.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed()                   ? 200
-                                                              : elevatorToggle && Optical.getProximity() < 100 ? 150
-                                                                                                               : 0);
-        Flywheel.moveVelocity(btnElevatorOut.isPressed() ? -200 : btnFlywheelOut.isPressed() ? 550
-                                                                                             : 0);
+        Elevator.moveVelocity(
+            btnElevatorOut.isPressed()                       ? -200
+            : btnFlywheelOut.isPressed()                     ? 200
+            : elevatorToggle && Optical.getProximity() < 100 ? 150
+                                                             : 0);
+        Flywheel.moveVelocity(
+            btnElevatorOut.isPressed()   ? -200
+            : btnFlywheelOut.isPressed() ? 550
+                                         : 0);
         pros::delay(20);
     }
 }
