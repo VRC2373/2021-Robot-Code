@@ -6,7 +6,7 @@ static OpticalSensor Optical(1);
 static IMU Inertial(11, IMUAxes::x);
 
 // Actuator Setup
-static MotorGroup Intake({Motor(18), Motor(-8)});
+static MotorGroup Intake({Motor(-18), Motor(8)});
 static Motor Elevator(7, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
 static Motor Flywheel(16, false, AbstractMotor::gearset::blue, AbstractMotor::encoderUnits::rotations);
 

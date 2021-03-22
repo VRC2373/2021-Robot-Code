@@ -84,49 +84,55 @@ void twoBallHood()
     Intake.moveVelocity(200);
     Elevator.moveVelocity(200);
 
-    //distance wrong
-    Chassis->moveDistanceAsync(44.91_in);
+    Chassis->moveDistanceAsync(43_in);
     pros::delay(1500);
-    Intake.moveVelocity(0);
+    Chassis->moveDistanceAsync(-1_in);
+    pros::delay(200);
+    Intake.moveVelocity(-200);
     Flywheel.moveVelocity(600);
     pros::delay(1500);
     Chassis->moveDistanceAsync(-10_in);
+    Intake.moveVelocity(0);
     Elevator.moveVelocity(0);
     Flywheel.moveVelocity(0);
 }
 
-void auton3()
+void sortTower()
 {
-    Chassis->setState({5.25_ft, 41_in, 0_deg});
+    Chassis->setState({-56.5_in, 41_in, -90_deg});
 
-    Chassis->driveToPoint({4_ft, 41_in}, true);
+    Chassis->driveToPoint({-4_ft, 4_ft}, true);
     deploySequence();
-    Chassis->turnToPoint(GoalC);
-    Elevator.moveVelocity(200);
-    Intake.moveVelocity(100);
-    Chassis->driveToPoint(GoalC, false, BumperOffset);
-
-    // Score Ball
-    Flywheel.moveVelocity(500);
-
-    bool prevVal = false;
-    for (int balls = 1; balls <= 3;)
-    {
-        if (Optical.getProximity() > 100)
-        {
-            balls++;
-            while (Optical.getProximity() > 100)
-                pros::delay(20);
-        }
-    }
-    Intake.moveVelocity(0);
+    Flywheel.moveVelocity(-400);
+    pros::delay(500);
     Flywheel.moveVelocity(0);
+    Intake.moveVelocity(200);
+    Chassis->driveToPoint(GoalA, false, BumperOffset);
+    Chassis->moveDistanceAsync(-1_in);
+    Elevator.moveVelocity(200);
+    Flywheel.moveVelocity(600);
+
+    Optical.setLedPWM(100);
+    for (int balls = 0; balls < 2; balls++)
+    {
+        while (Optical.getProximity() > 100)
+            pros::delay(20);
+        while (Optical.getProximity() <= 100)
+            pros::delay(20);
+    }
+
+    Intake.moveVelocity(-200);
+
+    while (Optical.getProximity() > 100)
+        pros::delay(20);
+
     Elevator.moveVelocity(0);
-    Chassis->moveDistance(-20_in);
+    Chassis->moveDistance(-10_in);
     Flywheel.moveVelocity(500);
     Elevator.moveVelocity(200);
     pros::delay(500);
     Flywheel.moveVelocity(0);
+    Intake.moveVelocity(0);
     Elevator.moveVelocity(0);
 }
 

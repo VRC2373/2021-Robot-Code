@@ -30,7 +30,7 @@ void deploySequence(bool force = false);
 void oneBall();
 void twoBall();
 void twoBallHood();
-void auton3();
+void sortTower();
 void homeRow();
 
 void skills();
