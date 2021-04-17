@@ -6,7 +6,7 @@
  * All other competition modes are blocked by initialize; it is recommended
  * to keep execution time for this mode under a few seconds.
  */
-void initialize() {}
+void initialize() { pros::lcd::initialize(); }
 
 /**
  * Runs while the robot is in the disabled state of Field Management System or
@@ -39,20 +39,21 @@ void competition_initialize() {}
  */
 void autonomous()
 {
-    pros::delay(400);
-    const uint8_t pins = getPins();
-    // Optical.setLedPWM(100);
-    if (pros::ADIDigitalIn(1).get_value())
-        oneBall();
-    else if (pros::ADIDigitalIn(2).get_value())
-        twoBall();
-    else if (pros::ADIDigitalIn(3).get_value())
-        twoBallHood();
-    else if (pros::ADIDigitalIn(4).get_value())
-        sortTower();
-    else if (pros::ADIDigitalIn(5).get_value())
-        skills();
-    Optical.setLedPWM(0);
+    Inertial.reset();
+    BottomOptical.setLedPWM(100);
+    TopOptical.setLedPWM(100);
+    // if (!pros::ADIDigitalIn('A').get_value())
+    //     oneBall();
+    // else if (!pros::ADIDigitalIn('B').get_value())
+    //     twoBall();
+    // else if (!pros::ADIDigitalIn('C').get_value())
+    //     twoBallHood();
+    // else if (!pros::ADIDigitalIn('D').get_value())
+    sortTower();
+    // else if (!pros::ADIDigitalIn('E').get_value())
+    //     skills();
+    TopOptical.setLedPWM(0);
+    BottomOptical.setLedPWM(0);
 }
 
 /**
@@ -70,8 +71,10 @@ void autonomous()
  */
 void opcontrol()
 {
-    Optical.setLedPWM(0);
+    TopOptical.setLedPWM(0);
+    BottomOptical.setLedPWM(0);
     bool elevatorToggle = false;
+    bool barDeploy = false;
     bool tankDrive = pros::ADIDigitalIn(8).get_value();
 
     if (pros::competition::is_connected())
@@ -79,28 +82,41 @@ void opcontrol()
 
     while (true)
     {
-        if (!tankDrive)
-            Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
-        else
-            Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+        chassis.splitArcade(Main.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), Main.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+        // if (!tankDrive)
+        // Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
+        // else
+        //     Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
 
         Intake.moveVelocity(
             btnIntakeIn.isPressed()
                 ? 200
-            : btnIntakeOut.isPressed() || btnFlywheelOut.isPressed()
+            : btnIntakeOut.isPressed() || btnElevatorOut.isPressed()
                 ? -200
                 : 0);
 
         if (btnElevatorToggle.changedToPressed())
             elevatorToggle = !elevatorToggle;
+
+        // if (!barDeploy)
+        // {
+        //     if (btnDeployBar.changedToPressed())
+        //     {
+        //         barDeploy = true;
+        //         Elevator.tarePosition();
+        //         Elevator.moveAbsolute(-400, 200);
+        //     }
+        //     else
         Elevator.moveVelocity(
             btnElevatorOut.isPressed()
                 ? -400
             : btnFlywheelOut.isPressed()
                 ? 600
-            : elevatorToggle && Optical.getProximity() < 100
+            : elevatorToggle && TopOptical.getProximity() < 100
                 ? 300
                 : 0);
+        // }
+
         Flywheel.moveVelocity(
             btnElevatorOut.isPressed()
                 ? -200

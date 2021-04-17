@@ -12,7 +12,7 @@ enum side
     NEITHER
 };
 
-const QLength BumperOffset = 9.5_in;
+const float BumperOffset = 9.5f;
 const Point GoalA = {-5.5_ft, 5.5_ft};
 const Point GoalB = {0_ft, 5.5_ft};
 const Point GoalC = {5.5_ft, 5.5_ft};
