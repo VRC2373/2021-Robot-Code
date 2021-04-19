@@ -2,7 +2,8 @@
 #include "okapi/api.hpp"
 using namespace okapi;
 
-static OpticalSensor Optical(1);
+static OpticalSensor TopOptical(1);
+static OpticalSensor BottomOptical(2);
 static IMU Inertial(11, IMUAxes::x);
 
 // Actuator Setup

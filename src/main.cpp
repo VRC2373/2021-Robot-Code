@@ -51,8 +51,9 @@ void autonomous()
     else if (pros::ADIDigitalIn(4).get_value())
         sortTower();
     else if (pros::ADIDigitalIn(5).get_value())
-        skills();
-    Optical.setLedPWM(0);
+        sortRightTower();
+    else if (pros::ADIDigitalIn(6).get_value())
+        twoBallHoodButRightSide();
 }
 
 /**
@@ -70,24 +71,16 @@ void autonomous()
  */
 void opcontrol()
 {
-    Optical.setLedPWM(0);
     bool elevatorToggle = false;
-    bool tankDrive = pros::ADIDigitalIn(8).get_value();
-
-    if (pros::competition::is_connected())
-        deploySequence();
 
     while (true)
     {
-        if (!tankDrive)
-            Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
-        else
-            Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+        Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
         Intake.moveVelocity(
             btnIntakeIn.isPressed()
                 ? 200
-            : btnIntakeOut.isPressed() || btnFlywheelOut.isPressed()
+            : btnIntakeOut.isPressed()
                 ? -200
                 : 0);
 
@@ -98,7 +91,7 @@ void opcontrol()
                 ? -400
             : btnFlywheelOut.isPressed()
                 ? 600
-            : elevatorToggle && Optical.getProximity() < 100
+            : elevatorToggle && TopOptical.getProximity() < 100
                 ? 300
                 : 0);
         Flywheel.moveVelocity(

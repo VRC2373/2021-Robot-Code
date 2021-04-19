@@ -59,7 +59,7 @@ void twoBall()
     Chassis->driveToPoint({-3_ft, 3_ft}, true);
     Intake.moveVelocity(100);
     Chassis->driveToPoint(GoalA, false, BumperOffset);
-    while (Optical.getProximity() < 100)
+    while (TopOptical.getProximity() < 100)
         ;
     Intake.moveVelocity(0);
 
@@ -97,6 +97,28 @@ void twoBallHood()
     Flywheel.moveVelocity(0);
 }
 
+void twoBallHoodButRightSide()
+{
+    Chassis->setState({-59.5_in, -12.12_in, 153_deg});
+    deploySequence(true);
+    Chassis->driveToPoint({-3_ft, -3_ft});
+    Chassis->turnToPoint(GoalG);
+    Intake.moveVelocity(200);
+    Elevator.moveVelocity(200);
+
+    Chassis->moveDistanceAsync(43_in);
+    pros::delay(1500);
+    Chassis->moveDistanceAsync(-1_in);
+    pros::delay(200);
+    Intake.moveVelocity(-200);
+    Flywheel.moveVelocity(600);
+    pros::delay(1500);
+    Chassis->moveDistanceAsync(-10_in);
+    Intake.moveVelocity(0);
+    Elevator.moveVelocity(0);
+    Flywheel.moveVelocity(0);
+}
+
 void sortTower()
 {
     Chassis->setState({-56.5_in, 41_in, -90_deg});
@@ -108,28 +130,76 @@ void sortTower()
     Flywheel.moveVelocity(0);
     Intake.moveVelocity(200);
     Chassis->driveToPoint(GoalA, false, BumperOffset);
-    Chassis->moveDistanceAsync(-1_in);
+    Chassis->moveDistance(-1_in);
     Elevator.moveVelocity(200);
     Flywheel.moveVelocity(600);
 
-    Optical.setLedPWM(100);
-    for (int balls = 0; balls < 2; balls++)
-    {
-        while (Optical.getProximity() > 100)
+    BottomOptical.setLedPWM(100);
+    // for (int balls = 0; balls < 2; balls++)
+    // {
+    if (pros::ADIDigitalIn(8).get_value())
+        while (BottomOptical.getRGB().red < 200)
             pros::delay(20);
-        while (Optical.getProximity() <= 100)
+    else
+        while (BottomOptical.getRGB().blue < 200)
             pros::delay(20);
-    }
+    // while (Optical.getProximity() <= 100)
+    //     pros::delay(20);
+    // }
 
-    Intake.moveVelocity(-200);
+    Intake.moveVelocity(0);
 
-    while (Optical.getProximity() > 100)
-        pros::delay(20);
+    pros::delay(1500);
+
+    // if (pros::ADIDigitalIn(8).get_value())
+    //     while (TopOptical.getRGB().red < 200)
+    //         pros::delay(20);
+    // else
+    //     while (TopOptical.getRGB().blue < 200)
+    //         pros::delay(20);
 
     Elevator.moveVelocity(0);
+    Flywheel.moveVelocity(0);
     Chassis->moveDistance(-10_in);
-    Flywheel.moveVelocity(500);
+    // Flywheel.moveVelocity(500);
+    Elevator.moveVelocity(-200);
+    pros::delay(500);
+    Flywheel.moveVelocity(0);
+    Intake.moveVelocity(0);
+    Elevator.moveVelocity(0);
+}
+
+void sortRightTower()
+{
+    Chassis->setState({-56.5_in, -41_in, -90_deg});
+
+    Chassis->driveToPoint({-4_ft, -4_ft}, true);
+    deploySequence();
+    Flywheel.moveVelocity(-400);
+    pros::delay(500);
+    Flywheel.moveVelocity(0);
+    Intake.moveVelocity(200);
+    Chassis->driveToPoint(GoalG, false, BumperOffset);
+    Chassis->moveDistance(-1_in);
     Elevator.moveVelocity(200);
+    Flywheel.moveVelocity(600);
+
+    BottomOptical.setLedPWM(100);
+    if (pros::ADIDigitalIn(8).get_value()) //cum dumpster // Thank you Jonathon...
+        while (BottomOptical.getRGB().red < 200)
+            pros::delay(20);
+    else
+        while (BottomOptical.getRGB().blue < 200)
+            pros::delay(20);
+
+    Intake.moveVelocity(0);
+
+    pros::delay(1500);
+
+    Elevator.moveVelocity(0);
+    Flywheel.moveVelocity(0);
+    Chassis->moveDistance(-10_in);
+    Elevator.moveVelocity(-200);
     pros::delay(500);
     Flywheel.moveVelocity(0);
     Intake.moveVelocity(0);
