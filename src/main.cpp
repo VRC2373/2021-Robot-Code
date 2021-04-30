@@ -72,10 +72,14 @@ void autonomous()
 void opcontrol()
 {
     bool elevatorToggle = false;
+    bool tank = pros::ADIDigitalIn(8).get_value();
 
     while (true)
     {
-        Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+        if (tank)
+            Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+        else
+            Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
 
         Intake.moveVelocity(
             btnIntakeIn.isPressed()

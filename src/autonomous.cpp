@@ -84,7 +84,7 @@ void twoBallHood()
     Intake.moveVelocity(200);
     Elevator.moveVelocity(200);
 
-    Chassis->moveDistanceAsync(43_in);
+    Chassis->moveDistanceAsync(40_in);
     pros::delay(1500);
     Chassis->moveDistanceAsync(-1_in);
     pros::delay(200);
