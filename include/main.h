@@ -42,8 +42,8 @@
 #include "okapi/api.hpp"
 #include "pros/apix.h"
 //#include "pros/api_legacy.h"
-#include "config.hpp"
 #include "autonomous.hpp"
+#include "config.hpp"
 // #include "graphics.h"
 
 /**
@@ -64,14 +64,13 @@ using namespace okapi;
  * button press in opcontrol() for testing purposes).
  */
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-    void autonomous(void);
-    void initialize(void);
-    void disabled(void);
-    void competition_initialize(void);
-    void opcontrol(void);
+void autonomous(void);
+void initialize(void);
+void disabled(void);
+void competition_initialize(void);
+void opcontrol(void);
 #ifdef __cplusplus
 }
 #endif
@@ -83,4 +82,4 @@ extern "C"
 //#include <iostream>
 #endif
 
-#endif // _PROS_MAIN_H_
+#endif  // _PROS_MAIN_H_

@@ -1,16 +1,11 @@
 #pragma once
 #include "api.h"
-#include "okapi/api.hpp"
 #include "config.hpp"
+#include "okapi/api.hpp"
 
 using namespace okapi;
 
-enum side
-{
-    LEFT,
-    RIGHT,
-    NEITHER
-};
+enum side { LEFT, RIGHT, NEITHER };
 
 const QLength BumperOffset = 9.5_in;
 const Point GoalA = {-5.5_ft, 5.5_ft};
