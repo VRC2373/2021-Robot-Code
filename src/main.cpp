@@ -37,23 +37,29 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous()
-{
-    Inertial.reset();
-    BottomOptical.setLedPWM(100);
-    TopOptical.setLedPWM(100);
-    // if (!pros::ADIDigitalIn('A').get_value())
-    //     oneBall();
-    // else if (!pros::ADIDigitalIn('B').get_value())
-    //     twoBall();
-    // else if (!pros::ADIDigitalIn('C').get_value())
-    //     twoBallHood();
-    // else if (!pros::ADIDigitalIn('D').get_value())
-    sortTower();
-    // else if (!pros::ADIDigitalIn('E').get_value())
-    //     skills();
-    TopOptical.setLedPWM(0);
-    BottomOptical.setLedPWM(0);
+void autonomous() {
+  Inertial->reset();
+  pros::delay(2000);
+
+  // chassis.driveFor2(24);
+  // chassis.turnFor(90);
+
+  // BottomOptical.setLedPWM(100);
+  // TopOptical.setLedPWM(100);
+  // if (!pros::ADIDigitalIn('A').get_value())
+  //     oneBall();
+  // else if (!pros::ADIDigitalIn('B').get_value())
+  //     twoBall();
+  // else if (!pros::ADIDigitalIn('C').get_value())
+  // twoBallHood();
+  // else if (!pros::ADIDigitalIn('D').get_value())
+  // sortTower();
+  // else if (!pros::ADIDigitalIn('E').get_value())
+  //     skills();
+  // TopOptical.setLedPWM(0);
+  // BottomOptical.setLedPWM(0);
+
+  homeRow();
 }
 
 /**
@@ -69,60 +75,48 @@ void autonomous()
  * operator control task will be stopped. Re-enabling the robot will restart the
  * task, not resume it from where it left off.
  */
-void opcontrol()
-{
-    TopOptical.setLedPWM(0);
-    BottomOptical.setLedPWM(0);
-    bool elevatorToggle = false;
-    bool barDeploy = false;
-    bool tankDrive = pros::ADIDigitalIn(8).get_value();
+void opcontrol() {
+  TopOptical.set_led_pwm(0);
+  BottomOptical.set_led_pwm(0);
+  bool elevatorToggle = false;
+  bool tankDrive = pros::ADIDigitalIn(8).get_value();
 
-    if (pros::competition::is_connected())
-        deploySequence();
+  if (pros::competition::is_connected()) deploySequence();
 
-    while (true)
-    {
-        chassis.splitArcade(Main.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y), Main.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
-        // if (!tankDrive)
-        // Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightX));
-        // else
-        //     Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY), Primary.getAnalog(ControllerAnalog::rightY));
+  // Inertial->reset();
+  // while (true)
+  // {
+  //     pros::lcd::print(0, "%.2f", Inertial->get_yaw());
+  //     pros::delay(20);
+  // }
 
-        Intake.moveVelocity(
-            btnIntakeIn.isPressed()
-                ? 200
-            : btnIntakeOut.isPressed() || btnElevatorOut.isPressed()
-                ? -200
-                : 0);
+  while (true) {
+    chassis.splitArcade(Primary.get_analog(pros::E_CONTROLLER_ANALOG_LEFT_Y),
+                        Primary.get_analog(pros::E_CONTROLLER_ANALOG_RIGHT_X));
+    // if (!tankDrive)
+    // Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY),
+    // Primary.getAnalog(ControllerAnalog::rightX)); else
+    //     Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY),
+    //     Primary.getAnalog(ControllerAnalog::rightY));
+    btnIntakeIn = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+    btnIntakeOut = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+    btnElevatorToggle =
+        Primary.get_digital_new_press(pros::E_CONTROLLER_DIGITAL_L2);
+    btnElevatorOut = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_B);
+    btnFlywheelOut = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+    btnDeployBar = Primary.get_digital(pros::E_CONTROLLER_DIGITAL_A);
 
-        if (btnElevatorToggle.changedToPressed())
-            elevatorToggle = !elevatorToggle;
+    LIntake = btnIntakeIn ? 127 : btnIntakeOut || btnElevatorOut ? -127 : 0;
+    RIntake = btnIntakeIn ? 127 : btnIntakeOut || btnElevatorOut ? -127 : 0;
 
-        // if (!barDeploy)
-        // {
-        //     if (btnDeployBar.changedToPressed())
-        //     {
-        //         barDeploy = true;
-        //         Elevator.tarePosition();
-        //         Elevator.moveAbsolute(-400, 200);
-        //     }
-        //     else
-        Elevator.moveVelocity(
-            btnElevatorOut.isPressed()
-                ? -400
-            : btnFlywheelOut.isPressed()
-                ? 600
-            : elevatorToggle && TopOptical.getProximity() < 100
-                ? 300
-                : 0);
-        // }
+    if (btnElevatorToggle) elevatorToggle = !elevatorToggle;
 
-        Flywheel.moveVelocity(
-            btnElevatorOut.isPressed()
-                ? -200
-            : btnFlywheelOut.isPressed()
-                ? 600
-                : 0);
-        pros::delay(20);
-    }
+    Elevator = (btnElevatorOut                                       ? -400
+                : btnFlywheelOut                                     ? 600
+                : elevatorToggle && TopOptical.get_proximity() < 100 ? 300
+                                                                     : 0);
+
+    Flywheel = btnElevatorOut ? -42.333 : btnFlywheelOut ? 127 : 0;
+    pros::delay(20);
+  }
 }
