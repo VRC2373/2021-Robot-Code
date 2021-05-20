@@ -133,19 +133,24 @@ void sortTower() {
 void homeRow() {
   chassis.setPosition(-59.5f, 12.12f, 27.0f);
   deploySequence(true);
+  puts("driving to go to goal a");
   chassis.driveTo(-36.0f, 36.0f);
+  puts("point to goal a");
   chassis.turnTo(GoalA);
   LIntake = 127;
   RIntake = 127;
   Elevator = 43;
 
+  puts("drive to goal a");
   chassis.driveFor2(43.0f);
+  puts("back up 1\"");
   chassis.driveFor2(-1.0f);
   pros::delay(200);
   LIntake = -127;
   RIntake = -127;
   Flywheel = 127;
 
+  puts("drive back to go to goal a");
   chassis.driveTo(-36.0f, 36.0f, true);
   LIntake = 0;
   RIntake = 0;

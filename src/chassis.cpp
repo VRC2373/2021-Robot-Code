@@ -1,6 +1,7 @@
 #include "chassis.hpp"
 
 #include "algorithm"
+#include "climits"
 #include "cmath"
 
 using namespace pros::literals;
@@ -29,8 +30,11 @@ void Chassis::setPosition(Point p, float θ) {
 }
 
 void Chassis::driveTo(float x, float y, bool backwards, float offset) {
-  turnTo(x, y);
-  driveFor2(std::sqrt(x * x + y * y) - offset);
+  if (backwards)
+    turnFor(m_θ + std::atan2(y - m_y, x - m_x));
+  else
+    turnTo(x, y);
+  driveFor2((backwards ? -1 : 1) * (std::sqrt(x * x + y * y) - offset));
 }
 
 void Chassis::driveTo(Point p, bool backwards, float offset) {
@@ -65,32 +69,43 @@ void Chassis::driveFor(float in) {
 }
 
 void Chassis::driveFor2(const float in) {
-  const double distance = in / (2 * M_PI * m_r_wheel);
-  for (pros::Motor m : m_drive_motors) m.move_relative(distance, 200);
-  float err = distance, position_sum;
+  puts("driving forward\n");
+  const float distance = in / (2 * M_PI * m_r_wheel);
+  for (pros::Motor m : m_drive_motors) {
+    m.tare_position();
+    m.move_relative(distance, 200);
+  };
+  float err = distance, position_sum, new_velocity;
+  printf("Dist: %.2f\n", distance);
   do {
+    pros::delay(20);
     position_sum = 0.0f;
+    new_velocity = std::copysignf(
+        std::clamp((int)std::abs(err / distance * 200.0f), 70, 200), err);
     for (pros::Motor m : m_drive_motors) {
-      m.modify_profiled_velocity(err / in * 200 + std::copysignf(50, err));
+      m.modify_profiled_velocity(new_velocity);
       position_sum += m.get_position();
     }
-    err = position_sum * .25 - distance;
-  } while (err > .2);
-  m_x = m_θ * std::cos(in - err);
-  m_y = m_θ * std::sin(in - err);
+    err = distance - (position_sum * 0.25f);
+    printf("err: %.2f, adj: %.2f\n", err, new_velocity);
+  } while (std::abs(err) > 0.2f);
+  const float err_inches = err * 2 * M_PI * m_r_wheel;
+  m_x = (in - err_inches) * std::cos(m_θ);
+  m_y = (in - err_inches) * std::sin(m_θ);
+  puts("done driving forward\n");
 }
 
 void Chassis::turnFor(float θ) {
   θ = fmodf(θ, 360.0f);
   if (m_imu == nullptr) return;
   while (m_imu->is_calibrating()) pros::delay(20);
-  float err = θ;
+  float err = θ, turnPower;
   m_imu->tare_rotation();
   do {
     pros::delay(20);
-    pros::lcd::print(0, "%.2f, %d", m_imu->get_rotation());
-    err = (θ - m_imu->get_rotation()) * m_p_turn;
-    setSpeeds(err, -err);
+    err = θ - (float)m_imu->get_rotation();
+    turnPower = std::copysignf(std::clamp(err * m_p_turn, 30.0f, 127.0f), err);
+    setSpeeds(turnPower, -turnPower);
   } while (std::abs(err) > 3);
   for (pros::Motor m : m_drive_motors)
     m.set_brake_mode(pros::E_MOTOR_BRAKE_COAST);
