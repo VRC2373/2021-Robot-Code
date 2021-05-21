@@ -20,6 +20,7 @@ static ControllerButton btnIntakeOut(Primary[ControllerDigital::R2]);
 static ControllerButton btnElevatorToggle(Primary[ControllerDigital::L2]);
 static ControllerButton btnElevatorOut(Primary[ControllerDigital::B]);
 static ControllerButton btnFlywheelOut(Primary[ControllerDigital::L1]);
+static ControllerButton btnFlywheelOutSlow(Primary[ControllerDigital::A]);
 
 // Chasis Setup
 static std::shared_ptr<OdomChassisController> Chassis =

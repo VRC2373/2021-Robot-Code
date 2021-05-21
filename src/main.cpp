@@ -53,6 +53,8 @@ void autonomous() {
     sortRightTower();
   else if (pros::ADIDigitalIn(6).get_value())
     twoBallHoodButRightSide();
+  else if (pros::ADIDigitalIn(7).get_value())
+    homeRow();
 }
 
 /**
@@ -70,29 +72,25 @@ void autonomous() {
  */
 void opcontrol() {
   bool elevatorToggle = false;
-  bool tank = pros::ADIDigitalIn(8).get_value();
 
   while (true) {
-    if (tank)
-      Chassis->getModel()->tank(Primary.getAnalog(ControllerAnalog::leftY),
-                                Primary.getAnalog(ControllerAnalog::rightY));
-    else
-      Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY),
-                                  Primary.getAnalog(ControllerAnalog::rightX));
+    Chassis->getModel()->arcade(Primary.getAnalog(ControllerAnalog::leftY),
+                                Primary.getAnalog(ControllerAnalog::rightX));
 
     Intake.moveVelocity(btnIntakeIn.isPressed()    ? 200
                         : btnIntakeOut.isPressed() ? -200
                                                    : 0);
 
     if (btnElevatorToggle.changedToPressed()) elevatorToggle = !elevatorToggle;
-    Elevator.moveVelocity(btnElevatorOut.isPressed()   ? -400
-                          : btnFlywheelOut.isPressed() ? 600
-                          : elevatorToggle && TopOptical.getProximity() < 100
-                              ? 300
-                              : 0);
-    Flywheel.moveVelocity(btnElevatorOut.isPressed()   ? -200
-                          : btnFlywheelOut.isPressed() ? 600
-                                                       : 0);
+    Elevator.moveVelocity(
+        btnElevatorOut.isPressed()                                     ? -400
+        : btnFlywheelOut.isPressed() || btnFlywheelOutSlow.isPressed() ? 600
+        : elevatorToggle && TopOptical.getProximity() < 100            ? 300
+                                                                       : 0);
+    Flywheel.moveVelocity(btnElevatorOut.isPressed()       ? -200
+                          : btnFlywheelOutSlow.isPressed() ? 200
+                          : btnFlywheelOut.isPressed()     ? 600
+                                                           : 0);
     pros::delay(20);
   }
 }
