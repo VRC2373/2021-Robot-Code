@@ -199,38 +199,43 @@ void homeRow() {
   Chassis->setState({-59.5_in, 12.12_in, 30_deg});
   deploySequence(true);
   Chassis->moveDistance(25_in);
+  pros::delay(100);
   Chassis->turnToPoint(GoalA);
   Intake.moveVelocity(200);
   Elevator.moveVelocity(200);
 
   // Chassis->driveToPoint(GoalA, false, BumperOffset);
   Chassis->moveDistanceAsync(23_in);
-  pros::delay(1500);
+  pros::delay(900);
   Chassis->moveDistanceAsync(-1_in);
-  pros::delay(200);
   Intake.moveVelocity(-200);
   Flywheel.moveVelocity(600);
-  pros::delay(500);
-  Chassis->setState({-79.9_in, 79.9_in, 315_deg});
+  pros::delay(1400);
   Intake.moveVelocity(0);
   Elevator.moveVelocity(0);
   Flywheel.moveVelocity(0);
-  Chassis->driveToPoint({-3.5_ft, 3.5_ft}, true);
-  Chassis->turnToPoint({-4.5_ft, -3.5_ft});
-  Intake.moveVelocity(200);
-  Elevator.moveVelocity(200);
 
-  Chassis->moveDistanceAsync(7_ft);
+  // Allign with wall
+  Chassis->moveDistance(-20_in);
+  Chassis->turnAngle(-135_deg);
+  Chassis->moveDistanceAsync(-40_in);
+  pros::delay(1300);
+  Chassis->moveDistance(8.2_ft);
+  // pros::delay(100);
+  Chassis->turnAngle(-135_deg);
+  // Intake.moveVelocity(200);
+  // Elevator.moveVelocity(200);
 
-  // Chassis->driveToPoint(GoalG, false, BumperOffset);
-  pros::delay(2500);
-  Chassis->moveDistanceAsync(-1_in);
-  pros::delay(500);
-  Intake.moveVelocity(-200);
-  Flywheel.moveVelocity(600);
-  pros::delay(1000);
-  Intake.moveVelocity(0);
-  Elevator.moveVelocity(0);
-  Flywheel.moveVelocity(0);
-  Chassis->moveDistanceAsync(-10_in);
+  Chassis->moveDistanceAsync(-100_m);
+  // pros::delay(900);
+  // Chassis->moveDistance(20_in);
+  // Chassis->moveDistanceAsync(-1_in);
+  // Intake.moveVelocity(-200);
+  // Flywheel.moveVelocity(600);
+  // pros::delay(1100);
+  // Intake.moveVelocity(0);
+  // Elevator.moveVelocity(0);
+  // Flywheel.moveVelocity(0);
+
+  // Chassis->moveDistanceAsync(-10_in);
 }
